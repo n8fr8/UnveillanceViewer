@@ -7,3 +7,6 @@
 [submodule "packages/tornado"]
 	path = packages/tornado
 	url = git@github.com:facebook/tornado.git
+[submodule "packages/mako"]
+	path = packages/mako
+	url = git@github.com:zzzeek/mako.git
