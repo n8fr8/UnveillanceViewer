@@ -1,0 +1,31 @@
+<html>
+<head>
+	<title>InformaCam Viewer</title>
+	<script type="text/javascript" src="/web/js/jquery.js"></script>
+	<script type="text/javascript" src="/web/js/mustache.js"></script>
+	<script type="text/javascript" src="/web/js/sammy.js"></script>
+	<script type="text/javascript" src="/web/js/unveillance.js"></script>
+	<link rel="stylesheet" type="text/css" href="/web/css/unveillance.css" />
+</head>
+<body>
+	<div id="header">
+		<h1><a href="/">InformaCam Viewer</a></h1>
+		<div id="header_ctrl">
+			<span>Look up media by hash: <input type="text" id="ic_lookup_hash" name="lookup_hash" /></span>
+			${ authentication_holder }
+		</div>
+	</div>
+	<div id="ic_search"></div>
+	<div id="content">${ template_content }</div>
+	<script>
+		renderUi(${ data });
+	</script>
+	<div id="aux_popup"></div>
+	<div id="footer">
+		<ul>
+			<li><a href="#about">About</a></li>
+			<li><a href="#help">Help</a></li>
+		</ul>
+	</div>
+</body>
+</html>
