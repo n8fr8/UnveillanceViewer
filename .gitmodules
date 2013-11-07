@@ -1,0 +1,9 @@
+[submodule "packages/pyCrypto"]
+	path = packages/pyCrypto
+	url = git@github.com:dlitz/pycrypto.git
+[submodule "packages/requests"]
+	path = packages/requests
+	url = git@github.com:kennethreitz/requests.git
+[submodule "packages/tornado"]
+	path = packages/tornado
+	url = git@github.com:facebook/tornado.git
