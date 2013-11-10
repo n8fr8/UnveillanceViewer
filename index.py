@@ -185,10 +185,17 @@ class RouteHandler(tornado.web.RequestHandler):
 				auth_tmpl = Template(filename="%s/layout/authentication/%s.html" % (static_path, auth_layout))
 				authentication_holder = auth_tmpl.render()
 			
+			authentication_ctrl = ''
+			if status == 2:
+				authentication_ctrl = Template(
+					filename="%s/layout/authentication/admin_ctrl.html" % static_path
+				).render()
+			
 			data = json.loads(r.text.replace(assets_path, ""))
 			self.finish(main_layout.render(
 				template_content=tmpl.render(),
 				authentication_holder=authentication_holder,
+				authentication_ctrl=authentication_ctrl,
 				data=json.dumps(data)
 			))
 
