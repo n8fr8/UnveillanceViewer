@@ -94,6 +94,10 @@ body {
 	width:75%;
 }
 
+#content #ic_j3m_holder.ic_content_holder #map {
+	height:400px;
+}
+
 #aux_popup {
 	z-index:3;
 	position:absolute;
@@ -124,6 +128,7 @@ h1, h2, h3 {
 	background-color:#292929;
 	font-weight:normal;
 	padding:2px 0;
+	font-family:'lato-regular';
 }
 
 p {
@@ -257,6 +262,10 @@ select {
 .ic_thumb {
 	width:100px;
 	height:100px
+}
+
+.ic_icon {
+	width:20px;
 }
 
 #ic_submission_thumb {

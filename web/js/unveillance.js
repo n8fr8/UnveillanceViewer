@@ -1,4 +1,5 @@
 var CurrentSearch = null;
+var j3m_viewer = null;
 
 function Searcher() {
 	var clause_types = [
@@ -146,7 +147,11 @@ function translate() {
 			var status_icon = "/web/images/" + $(item).html() + "_icn.png";
 			$(item).empty();
 			$(item).append(
-				$(document.createElement('img')).attr('src', status_icon)
+				$(document.createElement('img'))
+					.attr({
+						'src': status_icon,
+						'class' : "ic_icon"
+					})
 			);
 		}
 	});
@@ -185,7 +190,8 @@ function renderData(data) {
 }
 
 function renderJ3M(data) {
-	console.info(data);
+	j3m_viewer = new J3MViewer();
+	j3m_viewer.parse(data);
 }
 
 (function($) {

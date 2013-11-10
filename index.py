@@ -192,14 +192,13 @@ class RouteHandler(tornado.web.RequestHandler):
 				data=json.dumps(data)
 			))
 
-class MediaHandler(tornado.web.RequestHandler):
-	def initialize(self, _id, resolution):
-		self._id = _id
-		self.resolution = resolution
+class LeafletHandler(tornado.web.RequestHandler):
+	def initialize(self, route):
+		self.route = route
 	
-	def get(self, _id, resolution):
-		print self.request.uri
-		self.finish()
+	def get(self, route):
+		r = requests.get("http://cdn.leafletjs.com/leaflet-0.6.4/%s" % route)
+		self.finish(r.content)
 
 class LoginHandler(tornado.web.RequestHandler):
 	@tornado.web.asynchronous
@@ -275,9 +274,9 @@ cookie_tag = "unveillance_auth"
 cookie_secret = "this is a temp secret for cookies"
 
 routes = [
-	(r"/([^web/|login/|logout/|ping/][a-zA-Z0-9/]*/$)?", RouteHandler, dict(route=None)),
+	(r"/([^web/|login/|logout/|ping/|leaflet/][a-zA-Z0-9/]*/$)?", RouteHandler, dict(route=None)),
 	(r"/web/([a-zA-Z0-9\-/\._]+)", tornado.web.StaticFileHandler, {"path" : static_path }),
-	(r"/submission/[a-zA-Z0-9]{32}/media/[thumb|high|med|low]/", MediaHandler, dict(_id=None, resolution=None)),
+	(r"/leaflet/(.*)", LeafletHandler, dict(route=None)),
 	(r"/login/", LoginHandler),
 	(r"/logout/", LogoutHandler),
 	(r"/ping/", PingHandler)
