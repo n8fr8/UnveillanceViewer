@@ -25,7 +25,7 @@ var J3MViewer = function() {
 
 	}
 	
-	this.loadMap = function(lat,lon) {
+	this.loadMap = function(lon,lat) {
 		map = L.map('map').setView([lat,lon], 6);
 		L.tileLayer('http://{s}.tile.cloudmade.com/' + cloudmadeApiKey + '/110483/256/{z}/{x}/{y}.png', {
 			maxZoom: 18,
@@ -58,7 +58,9 @@ var J3MViewer = function() {
 			if(item instanceof Array) {
 				$.each(item,function(id2, item2) {
 					$("#" + name + "List").append(
-						$(document.createElement('div')).html(id + ": " + item2)
+						$(document.createElement('div'))
+							.attr('class', "ic_as_list")
+							.html('<span class="ic_label">' + id + ":</span> " + item2)
 					);
                 
                 });
@@ -68,7 +70,8 @@ var J3MViewer = function() {
             	if(name != "UserData") {
 					$("#" + name + "List").append(
 						$(document.createElement('div'))
-							.html(id + ": " + item.value + " at " + date.format("HH:mm:ss"))
+							.attr('class', "ic_as_list")
+							.html('<span class="ic_label">' + id + ":</span> " + item.value + " at " + date.format("HH:mm:ss"))
 					);
 				} else {
 					var parsedData = [];
@@ -76,10 +79,11 @@ var J3MViewer = function() {
 						$.each(Object.keys(form.answerData), function(idx_, key) {
 							
 							parsedData.push($(document.createElement('p'))
+								.attr('class', "ic_as_list")
 								.append(
 									$(document.createElement('span'))
 										.addClass('ic_label')
-										.html(key + ": ")
+										.html(key)
 								)
 								.append(
 									$(document.createElement('span'))
@@ -96,7 +100,9 @@ var J3MViewer = function() {
 				}
             } else {
                 $("#" + name + "List").append(
-                	$(document.createElement('div')).html(id + ": " + item)
+                	$(document.createElement('div'))
+                		.html('<span class="ic_label">' + id + ":</span> " + item)
+                		.attr('class', "ic_as_list")
                 );
             }
 	  });
@@ -107,19 +113,17 @@ var J3MViewer = function() {
 		arraySensorData.sort(function(a,b){return a.timestamp-b.timestamp});
 
 		var inner_span = $(document.createElement('div'))
-			.addClass('span12')
 			.append($(document.createElement('h3')).html(name))
 			.append(
 				$(document.createElement('canvas'))
 					.attr('id', name + 'Chart')
 					.prop({
 						'height' : 300,
-						'width': 1200
+						'width': $("#ic_j3m_holder").width()
 					})
 			);
-  		$("#main-row").append(
+  		$("#ic_j3m_holder").append(
   			$(document.createElement('div'))
-  				.addClass('row-fluid')
   				.append(inner_span)
   		);
 
@@ -165,18 +169,16 @@ var J3MViewer = function() {
 		arraySensorData3.sort(function(a,b){return a.timestamp-b.timestamp});
 
 		var inner_span = $(document.createElement('div'))
-			.addClass('span12')
 			.append($(document.createElement('h3')).html(name))
 			.append($(document.createElement('canvas'))
 				.attr('id', name + "Chart")
 				.prop({
 					'height' : 300,
-					'width' : 1200
+					'width' : $("#ic_j3m_holder").width()
 				})
 			);
-		$("#main-row").append(
+		$("#ic_j3m_holder").append(
 			$(document.createElement('div'))
-				.addClass('row-fluid')
 				.append(inner_span)
 		);
 		
@@ -256,7 +258,6 @@ var J3MViewer = function() {
 		j3m_viewer.addList("Camera",j3m.data.exif);
 		j3m_viewer.addList("Genealogy",j3m.genealogy);
 		
-		/*
 		if (j3m.data.userAppendedData) {
 			console.info(j3m.data.userAppendedData);
 			j3m_viewer.addList("UserData", j3m.data.userAppendedData);
@@ -349,6 +350,5 @@ var J3MViewer = function() {
 
 			j3m_viewer.addList("ssid", j3m_viewer.sensorData["ssid"]);
 		}
-		*/
 	};
 }
