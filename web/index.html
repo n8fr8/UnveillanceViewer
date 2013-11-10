@@ -4,6 +4,7 @@
 	<script type="text/javascript" src="/web/js/jquery.js"></script>
 	<script type="text/javascript" src="/web/js/mustache.js"></script>
 	<script type="text/javascript" src="/web/js/sammy.js"></script>
+	<script type="text/javascript" src="/web/js/moment.min.js"></script>
 	<script type="text/javascript" src="/web/js/unveillance.js"></script>
 	<link rel="stylesheet" type="text/css" href="/web/css/unveillance.css" />
 </head>
@@ -18,7 +19,8 @@
 	<div id="ic_search"></div>
 	<div id="content">${ template_content }</div>
 	<script>
-		renderUi(${ data });
+		renderData(${ data });
+		translate();
 	</script>
 	<div id="aux_popup"></div>
 	<div id="footer">

@@ -7,7 +7,7 @@ import tornado.web
 import tornado.httpserver
 from mako.template import Template
 
-from conf import cert_file, key_file, auth_root, uurl
+from conf import cert_file, key_file, auth_root, uurl, assets_path
 
 def terminationHandler(signal, frame):
 	sys.exit(0)
@@ -111,11 +111,10 @@ class RouteHandler(tornado.web.RequestHandler):
 
 	def get(self, route):
 		status = self.getStatus()
-		print route
 		if route is not None:
 			url = "%s%s" % (uurl, route)
 		else:
-			url = uurl
+			url = "%ssubmissions/" % uurl
 		print url	
 		format = None
 		q_string = self.request.query
@@ -145,7 +144,7 @@ class RouteHandler(tornado.web.RequestHandler):
 		try:
 			r = requests.get("%s%s" % (url, q_string))
 		except requests.exceptions.ConnectionError as e:
-			error_tmpl = Template(filename="%s/layout/error.html" % static_path)
+			error_tmpl = Template(filename="%s/layout/error_no_api.html" % static_path)
 			self.finish(main_layout.render(
 				template_content=error_tmpl.render(),
 				data={},
@@ -154,23 +153,31 @@ class RouteHandler(tornado.web.RequestHandler):
 			return
 			
 		if format:
-			self.write(r.text)
+			self.write(r.text.replace(assets_path, ""))
 		else:
 			if route is not None:
 				route = route.split("/")
 				route[:] = [word for word in route if word != '']
+				
+				if len(route) >= 3 and route[0] == "submission" and route[2] in media_routes:
+					if route[2] == media_routes[0]:
+						self.finish(r.text.replace(assets_path, ""))
+					elif route[2] == media_routes[1]:
+						self.set_header("Content-Type", r.headers['content-type'])
+						self.finish(r.content)
+					return
+				
 				layout = route[0]
+				
 			else:
 				layout = "main"
-			
-				
+
 			auth_layout = None
 			if status == 1:
 				auth_layout = "login_ctrl"
 			elif status == 2:
 				auth_layout = "search_ctrl"
 			
-			print "%s%s" % (url, q_string)
 			tmpl = Template(filename="%s/layout/%s.html" % (static_path, layout))
 
 			authentication_holder = ''
@@ -178,11 +185,21 @@ class RouteHandler(tornado.web.RequestHandler):
 				auth_tmpl = Template(filename="%s/layout/authentication/%s.html" % (static_path, auth_layout))
 				authentication_holder = auth_tmpl.render()
 			
+			data = json.loads(r.text.replace(assets_path, ""))
 			self.finish(main_layout.render(
 				template_content=tmpl.render(),
 				authentication_holder=authentication_holder,
-				data=json.loads(r.text)
+				data=json.dumps(data)
 			))
+
+class MediaHandler(tornado.web.RequestHandler):
+	def initialize(self, _id, resolution):
+		self._id = _id
+		self.resolution = resolution
+	
+	def get(self, _id, resolution):
+		print self.request.uri
+		self.finish()
 
 class LoginHandler(tornado.web.RequestHandler):
 	@tornado.web.asynchronous
@@ -240,6 +257,7 @@ class LogoutHandler(tornado.web.RequestHandler):
 
 static_path = os.path.join(os.path.dirname(__file__), "web")
 main_layout = Template(filename="%s/index.html" % static_path)
+media_routes = ["j3m", "media"]
 
 f = open(os.path.join(auth_root, "file_salt.txt"))
 file_salt = f.read().strip()
@@ -258,7 +276,8 @@ cookie_secret = "this is a temp secret for cookies"
 
 routes = [
 	(r"/([^web/|login/|logout/|ping/][a-zA-Z0-9/]*/$)?", RouteHandler, dict(route=None)),
-	(r"/web/([a-zA-Z0-9\-/\.]+)", tornado.web.StaticFileHandler, {"path" : static_path }),
+	(r"/web/([a-zA-Z0-9\-/\._]+)", tornado.web.StaticFileHandler, {"path" : static_path }),
+	(r"/submission/[a-zA-Z0-9]{32}/media/[thumb|high|med|low]/", MediaHandler, dict(_id=None, resolution=None)),
 	(r"/login/", LoginHandler),
 	(r"/logout/", LogoutHandler),
 	(r"/ping/", PingHandler)

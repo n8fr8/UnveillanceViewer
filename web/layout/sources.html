@@ -1,1 +1,18 @@
 <h2>Sources</h2>
+<ul class="ic_content_holder ic_list_vertical">
+	{{#.}}
+	<li>
+		<p>
+			<span class="ic_label">{{ alias }} (<span class="translatable ic_if_null">{{ email }}</span>)</span>
+		</p>
+		<p>
+			<span class="ic_label">fingerprint:</span>
+			<span>{{ fingerprint }}</span>
+		</p>
+		<p>
+			<a id="recent_submissions_ctrl_{{ _id }}">recent submissions...</a>
+		</p>
+		<div id="recent_submissions_holder_{{ _id }}"></div>
+	</li>
+	{{/.}}
+</ul>

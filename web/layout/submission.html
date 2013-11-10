@@ -1,1 +1,31 @@
 <h2>Submission {{ _id }}</h2>
+<div id="ic_submission_thumb"><img src="/submission/{{ _id }}/media/thumb/" /></div>
+<div id="ic_submission_info" class="ic_content_holder">
+	<p>
+		<span class="ic_label">date admitted:</span> <span class="translatable ic_date">{{ date_admitted }}</span>
+	</p>
+	<p>
+		<span class="ic_label">mime type:</span> <span>{{ mime_type }}</span>
+	</p>
+	<ul class="ic_status_holder">
+		<li>
+			<span class="ic_status_label">J3M signed and verified?</span>
+			<span class="translatable ic_status_value">{{ j3m_verified }}</span>
+		</li>
+		<li>
+			<span class="ic_status_label">Media content verified?</span>
+			<span class="translatable ic_status_value">{{ media_verified }}</span>
+		</li>
+	</ul>
+</div>
+<div id="ic_j3m_holder" class="ic_content_holder"></div>
+
+<script>
+	$.ajax({
+		url: "/submission/{{ _id }}/j3m/",
+		dataType: "json",
+		success: function(data) {
+			renderJ3M(data);
+		}
+	});
+</script>

@@ -1,2 +1,8 @@
 <h2>Recent Submissions</h2>
-<p>{{ hello }}</p>
+<ul class="ic_content_holder ic_list_grid">
+	{{#.}}
+	<li>
+		<a href="/submission/{{ _id }}/"><img class="ic_thumb" src="/submission/{{ _id }}/media/thumb/" class="ic_thumb_rollover" /></a>
+	</li>
+	{{/.}}
+</ul>

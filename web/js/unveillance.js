@@ -135,9 +135,57 @@ function initSearch() {
 	}
 }
 
+function translate() {
+	$.each($(".translatable"), function(idx, item) {
+		if($(item).hasClass('ic_date')) {
+			var date = moment(Number($(item).html()));
+			$(item).html(date.format("MM-DD-YYYY HH:mm"));
+		}
+		
+		if($(item).hasClass('ic_status_value')) {
+			var status_icon = "/web/images/" + $(item).html() + "_icn.png";
+			$(item).empty();
+			$(item).append(
+				$(document.createElement('img')).attr('src', status_icon)
+			);
+		}
+	});
+}
+
+function massageData(data) {
+	$.each(data, function(idx, item) {
+		// 1. if we are missing an id, get it from assetPath
+		if(item._id == undefined && item.asset_path) {
+			seg = item.asset_path.split("/");
+			data[idx]._id = seg[seg.length - 1];
+		}
+	});
+	
+	return data;
+}
+
 function renderUi(data) {
 	html = $("#content").html();
-	$("#content").html(Mustache.to_html(html, data));
+	$("#content").html(Mustache.to_html(html, massageData(data)));
+	console.info(data);
+}
+
+function renderData(data) {
+	if(data.result == 200) {
+		renderUi(data.data);
+	} else {
+		$.ajax({
+			url : "/web/layout/error_no_results.html",
+			dataType: "html",
+			success: function(html) {
+				$("#content").html(html);
+			}
+		});		
+	}	
+}
+
+function renderJ3M(data) {
+	console.info(data);
 }
 
 (function($) {
