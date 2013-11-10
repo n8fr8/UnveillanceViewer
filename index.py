@@ -115,7 +115,7 @@ class RouteHandler(tornado.web.RequestHandler):
 			url = "%s%s" % (uurl, route)
 		else:
 			url = "%ssubmissions/" % uurl
-		print url	
+		#print url	
 		format = None
 		q_string = self.request.query
 		
@@ -291,6 +291,6 @@ if __name__ == "__main__":
 		'keyfile': os.path.join(auth_root, key_file)
 	})
 	server.bind(6666)
-	server.start(5)
+	server.start(50)
 	
 	tornado.ioloop.IOLoop.instance().start()
