@@ -4,3 +4,4 @@ auth_root = "auth/"
 cert_file = "unveillance_web.crt"
 key_file = "unveillance_web.key"
 assets_path = ""
+server_port = 8888

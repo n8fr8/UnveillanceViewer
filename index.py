@@ -7,7 +7,7 @@ import tornado.web
 import tornado.httpserver
 from mako.template import Template
 
-from conf import use_ssl, cert_file, key_file, auth_root, uurl, assets_path
+from conf import server_port, use_ssl, cert_file, key_file, auth_root, uurl, assets_path
 
 def terminationHandler(signal, frame):
 	sys.exit(0)
@@ -294,13 +294,13 @@ signal.signal(signal.SIGINT, terminationHandler)
 
 if __name__ == "__main__":	
 	if (use_ssl == False):
-	  app.listen(8888);
+	  	app.listen(server_port)
 	else:
 		server = tornado.httpserver.HTTPServer(app, ssl_options={
 		'certfile' : os.path.join(auth_root, cert_file),
 		'keyfile': os.path.join(auth_root, key_file)
 		})
-		server.bind(6666)
+		server.bind(server_port)
 		server.start(50)
 	
 	tornado.ioloop.IOLoop.instance().start()
