@@ -83,7 +83,7 @@ var J3MViewer = function() {
 								.append(
 									$(document.createElement('span'))
 										.addClass('ic_label')
-										.html(key)
+										.html(key + " ")
 								)
 								.append(
 									$(document.createElement('span'))

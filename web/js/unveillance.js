@@ -231,7 +231,8 @@ function renderJ3M(data) {
 		app.run();
 		
 		$("#aux_popup").on('click', '.ic_exit', function() {
-			window.location = window.location.href.replace(window.location.hash, "");
+			$("#aux_popup").css('display', 'none');
+			window.history.back();
 		});
 		
 		$("#ic_lookup_hash").keypress(function(evt) {
