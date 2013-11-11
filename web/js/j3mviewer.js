@@ -44,7 +44,6 @@ var J3MViewer = function() {
 	}
 	
 	this.addList = function(name, arraySensorData) {
-		console.info(arraySensorData);
 		var list = $(document.createElement('div'))
 			.attr('id', name + "List")
 			.append($(document.createElement('h3')).html(name));
@@ -109,7 +108,91 @@ var J3MViewer = function() {
 
 	}
 	
-	this.addChart = function(name, chartType, arraySensorData) {
+	this.addRadarChart = function(name, arraySensorData) {
+		var inner_span = $(document.createElement('div'))
+			.append($(document.createElement('h3')).html(name))
+			.append(
+				$(document.createElement('canvas'))
+					.attr('id', name + 'Chart')
+					.prop({
+							'height' : 300,
+							'width': 300
+					})
+			);
+		
+		$("#ic_j3m_holder").append($(document.createElement('div')).append(inner_span));
+		
+		var ctx = $("#" + name + "Chart").get(0).getContext("2d");
+		var sensordata = new Array();
+		
+		$.each(arraySensorData, function(idx, sensorItem) {
+			sensordata[sensorItem.value] = 1 + (sensordata[sensorItem.value]||0);
+		});
+		
+		var chartData = {
+			labels :[],
+			datasets : [
+				{
+					fillColor : "rgba(220,220,220,0.5)",
+					strokeColor : "rgba(220,220,220,1)",
+					pointColor : "rgba(220,220,220,1)",
+					pointStrokeColor : "#fff",
+					data :[]
+				}
+			]
+		};
+		
+		for(var sensorid in sensordata) {
+			if(sensordata.hasOwnProperty(sensorid)) {
+				chartData.labels.push(sensorid);
+				chartData.datasets[0].data.push(sensordata[sensorid]);
+				console.info("adding " + sensorid + "=" + sensordata[sensorid]);
+			}
+		}
+
+		var newChart = new Chart(ctx).Radar(chartData);
+	}
+	
+	this.addDonutChart = function(name,arraySensorData) {
+		arraySensorData.sort(function(a,b){return a.timestamp-b.timestamp});
+		
+		var inner_span = $(document.createElement('div'))
+			.append($(document.createElement('h3')).html(name))
+			.append(
+				$(document.createElement('canvas'))
+					.attr('id', name + 'Chart')
+					.prop({
+							'height' : 300,
+							'width': 300
+					})
+			);
+		
+		$("#ic_j3m_holder").append($(document.createElement('div')).append(inner_span));
+		
+		var ctx = $("#" + name + "Chart").get(0).getContext("2d");
+		var sensordata = new Array();
+		
+		$.each(arraySensorData, function(idx, sensorItem) {
+			var key = sensorItem.value.split(" (")[0];
+			sensordata[key] = 1 + (sensordata[key]||0);
+		});
+
+		var data = new Array ();
+		for(var sensorid in sensordata) {
+			if(sensordata.hasOwnProperty(sensorid)) {
+				var chartEntry = new Object();
+				chartEntry.value = sensordata[sensorid];
+				chartEntry.color = get_random_color();
+				data.push(chartEntry);
+				console.info("adding " + sensorid + "=" + sensordata[sensorid]);
+			}
+		};
+
+
+		var newChart = new Chart(ctx).Doughnut(data);
+	}
+	
+	this.addLineChart = function(name, chartType, arraySensorData) {
 		arraySensorData.sort(function(a,b){return a.timestamp-b.timestamp});
 
 		var inner_span = $(document.createElement('div'))
@@ -122,28 +205,28 @@ var J3MViewer = function() {
 						'width': $("#ic_j3m_holder").width()
 					})
 			);
-  		$("#ic_j3m_holder").append(
-  			$(document.createElement('div'))
-  				.append(inner_span)
-  		);
+  		$("#ic_j3m_holder").append($(document.createElement('div')).append(inner_span));
 
 		var ctx = $("#" + name + "Chart").get(0).getContext("2d");
 		var myNewChart = new Chart(ctx);
 
   		var labels = new Array(); 
-  		var datas = new Array ();
+  		var datas = new Array();
 
-		var isEven = false;
+		var interval = 20;
+		var idx = 0;
+		
    		$.each(arraySensorData, function(id, item) {
-			if (isEven) {
-				var date = moment(Number(item.timestamp));
-				labels[labels.length] = date.format("HH:mm:ss");
-			} else {
-	            labels[labels.length] = "";
-	        }
-
-            datas[datas.length] = item.value;
-            isEven = !isEven;
+   			if(idx == 0) {
+   				var date = moment(Number(item.timestamp));
+   				labels[labels.length] = date.format("HH:mm:ss");
+   				datas[datas.length] = item.value;
+   			}
+   			
+   			idx++;
+   			if(idx == interval) {
+   				idx = 0;
+   			}
       	});
 
   		var data = {
@@ -159,7 +242,7 @@ var J3MViewer = function() {
 			]
   		};
 
-  		var newChat = new Chart(ctx).Line(data);
+  		var newChart = new Chart(ctx).Line(data);
 	}
 	
 	this.addMultiChart = function(name, chartType, arraySensorData1,arraySensorData2,arraySensorData3
@@ -249,7 +332,7 @@ var J3MViewer = function() {
 			this.timestamp = timestamp;
 		}
 		
-		if (j3m.data.exif.location) {
+		if(j3m.data.exif.location) {
 			console.info(j3m.data.exif.location);
 			j3m_viewer.loadMap(j3m.data.exif.location[0],j3m.data.exif.location[1]);
 		}
@@ -308,47 +391,51 @@ var J3MViewer = function() {
 			});
 		});
 
-
-		j3m_viewer.addChart(
+		j3m_viewer.addLineChart(
 			"lightMeterValue","",j3m_viewer.sensorData["lightMeterValue"]
 		);
-		j3m_viewer.addChart(
-			"roll","",j3m_viewer.sensorData["roll"]
+		
+		if(j3m_viewer.sensorData["pressureHPAOrMBAR"]) {
+			j3m_viewer.addLineChart(
+				"pressureHPAOrMBAR","",j3m_viewer.sensorData["pressureHPAOrMBAR"]
+			);
+		}
+		
+		j3m_viewer.addMultiChart(
+			"PitchRollAzimuth","",
+			j3m_viewer.sensorData["pitch"],
+			j3m_viewer.sensorData["roll"],
+			j3m_viewer.sensorData["azimuth"]
 		);
-		j3m_viewer.addChart(
-			"pitch","",j3m_viewer.sensorData["pitch"]
-		);
-		j3m_viewer.addChart(
-			"azimuth","",j3m_viewer.sensorData["azimuth"]
-		);
+
 		j3m_viewer.addMultiChart(
 			"Accelerometer","",
 			j3m_viewer.sensorData["acc_x"],
 			j3m_viewer.sensorData["acc_y"],
 			j3m_viewer.sensorData["acc_z"]
 		);
-
 		
-		j3m_viewer.sensorData["bluetoothDeviceName"].sort(function(a,b){
-			return a.timestamp-b.timestamp
-		});
-		
-		j3m_viewer.addList(
-			"bluetoothDeviceName", j3m_viewer.sensorData["bluetoothDeviceName"]
-		);
-		
-		if(j3m_viewer.sensorData["cellTowerId"] != undefined) {
-			j3m_viewer.addList(
-				"cellTowerId",j3m_viewer.sensorData["cellTowerId"]
+		if(j3m_viewer.sensorData["bluetoothDeviceName"]){        
+			j3m_viewer.addDonutChart(
+				"bluetoothDeviceName",j3m_viewer.sensorData["bluetoothDeviceName"]
 			);
 		}
-		
-		if(j3m_viewer.sensorData["ssid"] != undefined) {
-			j3m_viewer.sensorData["ssid"].sort(function(a,b){
-				return a.timestamp-b.timestamp
-			});
 
-			j3m_viewer.addList("ssid", j3m_viewer.sensorData["ssid"]);
+		if(j3m_viewer.sensorData["cellTowerId"] != undefined) {
+			j3m_viewer.addDonutChart("cellTowerId",j3m_viewer.sensorData["cellTowerId"]);
+		}
+
+		if(j3m_viewer.sensorData["ssid"] != undefined) {
+			j3m_viewer.addDonutChart("ssid",j3m_viewer.sensorData["ssid"]);
 		}
 	};
+}
+
+function get_random_color() {
+	var letters = '0123456789ABCDEF'.split('');
+	var color = '#';
+	for(var i = 0; i < 6; i++ ) {
+		color += letters[Math.round(Math.random() * 15)];
+	}
+	return color;
 }
