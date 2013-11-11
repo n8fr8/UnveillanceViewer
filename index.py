@@ -298,6 +298,6 @@ if __name__ == "__main__":
 		'keyfile': os.path.join(auth_root, key_file)
 	})
 	server.bind(6666)
-	server.start(50)
+	server.start(100)
 	
 	tornado.ioloop.IOLoop.instance().start()
