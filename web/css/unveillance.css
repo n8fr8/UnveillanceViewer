@@ -1,25 +1,25 @@
 @font-face {
 	font-family: 'lato-hairline';
-	src: url('lato-hairline-webfont.eot');
-	src: url('lato-hairline-webfont.eot?#iefix') format('embedded-opentype'),
-		url('lato-hairline-webfont.woff') format('woff'),
-		url('lato-hairline-webfont.svg#webfont') format('svg');
+	src: url('fonts/lato-hairline-webfont.eot');
+	src: url('fonts/lato-hairline-webfont.eot?#iefix') format('embedded-opentype'),
+		url('fonts/lato-hairline-webfont.woff') format('woff'),
+		url('fonts/lato-hairline-webfont.svg#webfont') format('svg');
 }
 
 @font-face {
 	font-family: 'lato-hairline-italic';
-	src: url('lato-hairlineitalic-webfont.eot');
-	src: url('lato-hairlineitalic-webfont.eot?#iefix') format('embedded-opentype'),
-		url('lato-hairlineitalic-webfont.woff') format('woff'),
-		url('lato-hairlineitalic-webfont.svg#webfont') format('svg');
+	src: url('fonts/lato-hairlineitalic-webfont.eot');
+	src: url('fonts/lato-hairlineitalic-webfont.eot?#iefix') format('embedded-opentype'),
+		url('fonts/lato-hairlineitalic-webfont.woff') format('woff'),
+		url('fonts/lato-hairlineitalic-webfont.svg#webfont') format('svg');
 }
 
 @font-face {
 	font-family: 'lato-regular';
-	src: url('lato-regular-webfont.eot');
-	src: url('lato-regular-webfont.eot?#iefix') format('embedded-opentype'),
-		url('lato-regular-webfont.woff') format('woff'),
-		url('lato-regular-webfont.svg#webfont') format('svg');
+	src: url('fonts/lato-regular-webfont.eot');
+	src: url('fonts/lato-regular-webfont.eot?#iefix') format('embedded-opentype'),
+		url('fonts/lato-regular-webfont.woff') format('woff'),
+		url('fonts/lato-regular-webfont.svg#webfont') format('svg');
 }
 
 body {
