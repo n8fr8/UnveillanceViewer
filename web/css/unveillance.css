@@ -86,7 +86,7 @@ body {
 
 #content .ic_content_holder {
 	margin:4px 10px;
-	font-family:arial;
+	font-family:'lato-regular';
 	width:99%;
 }
 
@@ -126,9 +126,9 @@ h1, h2, h3 {
 	margin-bottom:4px;
 	color:#fff;
 	background-color:#292929;
-	font-weight:normal;
+	font-weight:bold;
 	padding:2px 0;
-	font-family:'lato-regular';
+	font-family:'lato-hairline';
 }
 
 p {
@@ -155,6 +155,7 @@ a {
 
 #header a, #header a:hover {
 	color:#fff;
+	font-family:'lato-hairline';
 }
 
 #footer a {
