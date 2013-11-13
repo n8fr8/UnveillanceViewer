@@ -1,6 +1,10 @@
 var u_user = null;
 var User = function() {
 	var user = JSON.parse(localStorage.getItem('user'));
+	if(user == null) {
+		return;
+	}
+	
 	this.session_log = new Array();
 	this.username = user.username;
 	this.saved_searches = user.saved_searches;
