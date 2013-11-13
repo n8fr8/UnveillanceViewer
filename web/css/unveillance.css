@@ -80,8 +80,6 @@ body {
 	position:relative;
 	width:100%;
 	clear:both;
-	height:80%;
-	overflow-y:auto;
 }
 
 #content .ic_content_holder {
@@ -98,6 +96,10 @@ body {
 	height:400px;
 }
 
+#content #map.ic_content_holder {
+	margin-bottom:40px;
+}
+
 #aux_popup {
 	z-index:3;
 	position:absolute;
@@ -111,14 +113,22 @@ body {
 	overflow:hidden;
 }
 
+#aux_popup #ic_bad_login_holder {
+	padding:0 10px;
+	margin:0 10px;
+	display:none;
+}
+
 #footer {
-	position:absolute;
+	position:fixed;
 	height:inherit;
-	width:100%;
+	width:auto;
 	bottom:0;
 	z-index:2;
 	font-size:0.9em;
 	margin-bottom:10px;
+	right:0;
+	float:right
 }
 
 h1, h2, h3 {

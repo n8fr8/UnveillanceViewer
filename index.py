@@ -1,4 +1,4 @@
-import requests, signal, sys, re, os, hashlib, base64, json
+import requests, signal, sys, re, os, hashlib, base64, json, copy
 from Crypto.Cipher import AES
 from Crypto import Random
 
@@ -7,10 +7,16 @@ import tornado.web
 import tornado.httpserver
 from mako.template import Template
 
-from conf import server_port, use_ssl, cert_file, key_file, auth_root, uurl, assets_path
+from conf import server_port, use_ssl, cert_file, key_file, auth_root, uurl, assets_path, cookie_tag, cookie_secret, no_access_cookie
 
 def terminationHandler(signal, frame):
 	sys.exit(0)
+
+def createNewUser(username, password):
+	credentials = copy.deepcopy(credential_pack)
+	credentials['username'] = username
+	
+	return encrypt(credentials, password, p_salt=password_salt, iv=private_iv)
 
 def encrypt(plaintext, password, iv=None, p_salt=None):
 	if p_salt is not None:
@@ -95,7 +101,7 @@ class RouteHandler(tornado.web.RequestHandler):
 		# if you have a NO_ACCESS cookie, well, that's too bad
 		try:
 			for cookie in self.request.cookies:
-				if cookie == "unveillance_":
+				if cookie == no_access_cookie:
 					return 0
 		except KeyError as e:
 			pass
@@ -105,19 +111,37 @@ class RouteHandler(tornado.web.RequestHandler):
 			return 2
 
 		return 1
+	
+	def validateUnprivilegedQuery(self, q_string):
+		if q_string == "":
+			return True
 			
+		allowed_queries = ["public_hash", "get_all"]
+		
+		for kvp in q_string[1:].split("&"):
+			key_val = kvp.split("=")
+			if key_val[0] not in allowed_queries:
+				return False
+				
+		return True
+	
 	def initialize(self, route):
 		self.route = route
 
 	def get(self, route):
+		q_string = self.request.query
+		
 		status = self.getStatus()
+		
 		if route is not None:
 			url = "%s%s" % (uurl, route)
 		else:
 			url = "%ssubmissions/" % uurl
-		#print url	
+			q_string = "?get_all=false"
+			
+		print url	
 		format = None
-		q_string = self.request.query
+		
 		
 		if q_string != "":
 			for kvp in self.request.query.split("&"):
@@ -130,17 +154,24 @@ class RouteHandler(tornado.web.RequestHandler):
 			if not q_string.startswith("?"):
 				q_string = "?%s" % q_string
 			
+			if re.search(r'&&', q_string):
+				q_string = q_string.replace("&&","&")
+			
+			if re.search(r'.*&$', q_string):
+				q_string = q_string[:-1]
+			
 			if re.search(r'^\?&.*', q_string):
 				q_string = q_string.replace("?&","?")
 			
 			if q_string == "?":
 				q_string = ""
 		
-		if status == 0 and len(q_string) > 0:
+		if status == 0 and not self.validateUnprivilegedQuery(q_string):
+			print self.validateUnprivilegedQuery(q_string)
 			self.redirect('/')
-			self.finish()
 			return
 		
+		print "%s%s" % (url, q_string)
 		try:
 			r = requests.get("%s%s" % (url, q_string))
 		except requests.exceptions.ConnectionError as e:
@@ -170,7 +201,10 @@ class RouteHandler(tornado.web.RequestHandler):
 				layout = route[0]
 				
 			else:
-				layout = "main"
+				if status == 0:
+					layout = "main_public"
+				else:
+					layout = "main"
 
 			auth_layout = None
 			if status == 1:
@@ -223,12 +257,11 @@ class LoginHandler(tornado.web.RequestHandler):
 			elif kv[0] == "password":
 				password = kv[1]
 		
-		if username is None or password is None:
-			self.write({'ok':False})
-			self.finish()
+		if username is "" or password is "" or username is None or password is None:
+			self.finish({'ok':False})
+			return
 		
 		auth = "%s.txt" % hashlib.sha1(username + file_salt).hexdigest()
-		print auth
 		
 		# if this file exists,
 		try:
@@ -242,24 +275,23 @@ class LoginHandler(tornado.web.RequestHandler):
 			# if that works, reencrypt plaintext with random IV and send it back
 			# if you can decrypt it on your end, that's your cookie for now on.
 			if plaintext is not None:
-				new_cookie = encrypt(plaintext, password)
+				new_cookie = base64.b64encode(json.dumps(plaintext))
+				print "NEW COOKIE:\n%s" % new_cookie
 				if new_cookie is not None:
-					self.set_secure_cookie(cookie_tag, new_cookie, expires_days=1)
-					self.write({'ok':True})
-					self.finish()
+					self.set_secure_cookie(cookie_tag, new_cookie, path="/", expires_days=1)
+					self.finish({'ok':True, 'user' : plaintext})
+					return
 			
 		except IOError as e:
 			pass
 		
-		self.write({'ok':False})
-		self.finish()
+		self.finish({'ok':False})
 
 class LogoutHandler(tornado.web.RequestHandler):
 	@tornado.web.asynchronous
 	def get(self):
 		self.clear_cookie(cookie_tag)
-		self.redirect('/')
-		self.finish()
+		self.finish({'ok':True})
 
 static_path = os.path.join(os.path.dirname(__file__), "web")
 main_layout = Template(filename="%s/index.html" % static_path)
@@ -277,8 +309,11 @@ f = open(os.path.join(auth_root, "iv.txt"))
 private_iv = f.read().strip()
 f.close()
 
-cookie_tag = "unveillance_auth"
-cookie_secret = "this is a temp secret for cookies"
+credential_pack = {
+	"username" : "",
+	"saved_searches" : [],
+	"session_log" : []
+}
 
 routes = [
 	(r"/([^web/|login/|logout/|ping/|leaflet/][a-zA-Z0-9/]*/$)?", RouteHandler, dict(route=None)),
@@ -303,6 +338,6 @@ if __name__ == "__main__":
 		})
 	
 	server.bind(server_port)
-	server.start(100)
+	server.start(2)
 	
 	tornado.ioloop.IOLoop.instance().start()

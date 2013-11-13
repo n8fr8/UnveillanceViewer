@@ -10,6 +10,7 @@
 	<script type="text/javascript" src="/leaflet/leaflet.js"></script>
 	<script type="text/javascript" src="/web/js/chart.js"></script>
 	<script type="text/javascript" src="/web/js/j3mviewer.js"></script>
+	<script type="text/javascript" src="/web/js/user.js"></script>
 	<script type="text/javascript" src="/web/js/unveillance.js"></script>
 </head>
 <body>
@@ -22,17 +23,20 @@
 	</div>
 	<div id="ic_search"></div>
 	<div id="content">${ template_content }</div>
-	<script>
-		renderData(${ data });
-		translate();
-	</script>
 	<div id="aux_popup"></div>
 	<div id="footer">
-		<ul>
+		<a swap_a="expand_gears.png" swap_b="contract_gears.png" onclick="swapImage(this, toggleElement('#footer_holder'));"><img src="/web/images/expand_gears.png" /></a>
+		<ul id="footer_holder" style="display:none;">
 			${ authentication_ctrl }
 			<li><a href="#about">About</a></li>
 			<li><a href="#help">Help</a></li>
 		</ul>
 	</div>
+	
+	<script>
+		renderData(${ data });
+		translate();
+	</script>
+	
 </body>
 </html>

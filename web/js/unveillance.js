@@ -111,6 +111,15 @@ function toggleElement(el) {
 	}
 }
 
+function swapImage(el, swap) {
+	console.info($(el));
+	if(swap) {
+		$($(el).children('img')[0]).attr('src', "/web/images/" + $(el).attr('swap_a'));
+	} else {
+		$($(el).children('img')[0]).attr('src', "/web/images/" + $(el).attr('swap_b'));
+	}
+}
+
 function initSearch() {
 	if(toggleElement('#ic_search')) {
 		$("#ic_search_ctrl").addClass('ic_selected');
@@ -172,10 +181,11 @@ function massageData(data) {
 function renderUi(data) {
 	html = $("#content").html();
 	$("#content").html(Mustache.to_html(html, massageData(data)));
-	console.info(data);
 }
 
 function renderData(data) {
+	u_user = new User();
+	
 	if(data.result == 200) {
 		renderUi(data.data);
 	} else {
@@ -194,19 +204,59 @@ function renderJ3M(data) {
 	j3m_viewer.parse(data);
 }
 
+function renderJ3MMap(points) {
+	$("#map").css('height', $("#footer").position().top * 0.8);
+	var cloudmadeApiKey = '23c00ae936704081ab019253c36a55b3';
+	
+	map = L.map('map').setView([0,0], 6);
+	L.tileLayer('http://{s}.tile.cloudmade.com/' + cloudmadeApiKey + '/110483/256/{z}/{x}/{y}.png', {
+		maxZoom: 18,
+		attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>'
+	}).addTo(map);	
+	
+	var absorbed = new Array();
+	$.each(points, function(idx, item) {
+		point = [item[1].toFixed(3), item[0].toFixed(3)];
+		if(absorbed.indexOf(point.join()) == -1) {
+			L.marker(point).addTo(map);
+			absorbed.push(point.join());
+		}
+	});
+	
+	map.setZoom(1);
+}
+
+function renderAuxContent(html) {
+	$("#aux_popup").empty();
+	$("#aux_popup").html(html);
+	if($("#aux_popup").css('display') != "block") {
+		$("#aux_popup").css('display','block');
+	}
+}
+
+function killAuxPopup() {
+	$("#aux_popup").css('display', 'none');
+	window.history.back();
+}
+
 (function($) {
 	var app = $.sammy('#aux_popup', function() {
+		this.get('#login', function(context) {
+			$.ajax({
+				url: "/web/layout/authentication/do_login.html",
+				dataType: "html",
+				success: function(html) {
+					renderAuxContent(html);
+				}
+			});
+		});
 
 		this.get('#about', function(context) {
 			$.ajax({
 				url: "/web/layout/static/about.html",
 				dataType: "html",
 				success: function(html) {
-					$("#aux_popup").empty();
-					$("#aux_popup").html(html);
-					if($("#aux_popup").css('display') != "block") {
-						$("#aux_popup").css('display','block');
-					}
+					renderAuxContent(html);
 				}
 			});
 		});
@@ -216,13 +266,13 @@ function renderJ3M(data) {
 				url: "/web/layout/static/help.html",
 				dataType: "html",
 				success: function(html) {
-					$("#aux_popup").empty();
-					$("#aux_popup").html(html);
-					if($("#aux_popup").css('display') != "block") {
-						$("#aux_popup").css('display','block');
-					}
+					renderAuxContent(html);
 				}
 			});
+		});
+		
+		this.get('#admin', function(context) {
+			doAdmin();
 		});
 
 	});
@@ -230,14 +280,11 @@ function renderJ3M(data) {
 	$(function() {
 		app.run();
 		
-		$("#aux_popup").on('click', '.ic_exit', function() {
-			$("#aux_popup").css('display', 'none');
-			window.history.back();
-		});
+		$("#aux_popup").on('click', '.ic_exit', killAuxPopup);
 		
 		$("#ic_lookup_hash").keypress(function(evt) {
 			if(evt.which == 13) {
-				window.location = "/submission/" + $("#ic_lookup_hash").val() + "/";
+				window.location = "/submissions/?public_hash=" + $("#ic_lookup_hash").val();
 			}
 		});
 	});
