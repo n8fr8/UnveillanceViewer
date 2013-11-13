@@ -137,11 +137,9 @@ class RouteHandler(tornado.web.RequestHandler):
 			url = "%s%s" % (uurl, route)
 		else:
 			url = "%ssubmissions/" % uurl
-			q_string = "?get_all=false"
 			
 		print url	
 		format = None
-		
 		
 		if q_string != "":
 			for kvp in self.request.query.split("&"):
@@ -243,7 +241,26 @@ class LeafletHandler(tornado.web.RequestHandler):
 
 class LoginHandler(tornado.web.RequestHandler):
 	@tornado.web.asynchronous
+	def getStatus(self):
+		# if you have a NO_ACCESS cookie, well, that's too bad
+		try:
+			for cookie in self.request.cookies:
+				if cookie == no_access_cookie:
+					return 0
+		except KeyError as e:
+			pass
+	
+		access = self.get_secure_cookie(cookie_tag)
+		if access is not None:
+			return 2
+
+		return 1
+		
 	def post(self):
+		if self.getStatus() == 0:
+			self.finish({'ok':False})
+			return
+			
 		print "LOG IN REQUEST"
 		
 		username = None
@@ -289,7 +306,26 @@ class LoginHandler(tornado.web.RequestHandler):
 
 class LogoutHandler(tornado.web.RequestHandler):
 	@tornado.web.asynchronous
+	def getStatus(self):
+		# if you have a NO_ACCESS cookie, well, that's too bad
+		try:
+			for cookie in self.request.cookies:
+				if cookie == no_access_cookie:
+					return 0
+		except KeyError as e:
+			pass
+	
+		access = self.get_secure_cookie(cookie_tag)
+		if access is not None:
+			return 2
+
+		return 1
+		
 	def get(self):
+		if self.getStatus() == 0:
+			self.finish({'ok':False})
+			return
+			
 		self.clear_cookie(cookie_tag)
 		self.finish({'ok':True})
 
@@ -338,6 +374,6 @@ if __name__ == "__main__":
 		})
 	
 	server.bind(server_port)
-	server.start(2)
+	server.start(50)
 	
 	tornado.ioloop.IOLoop.instance().start()
