@@ -232,7 +232,7 @@ var J3MViewer = function() {
 		var newChart = new Chart(ctx).Radar(chartData);
 	}
 	
-	this.addDonutChart = function(name,arraySensorData) {
+	this.addDonutChart = function(name,arraySensorData, chartWidth) {
 		arraySensorData.sort(function(a,b){return a.timestamp-b.timestamp});
 		
 		var inner_span = $(document.createElement('div'))
@@ -241,10 +241,7 @@ var J3MViewer = function() {
 					$(document.createElement('div'))
 					.attr('id', name + 'ChartHolder')
 					.css('float','left')
-					
-					.prop({
-						'width': '800px',
-					}).append($(document.createElement('canvas'))
+					.append($(document.createElement('canvas'))
 							.attr('id', name + 'Chart')
 							.prop({
 									'height' : 300,
@@ -254,13 +251,14 @@ var J3MViewer = function() {
 			.append(
 				$(document.createElement('div'))
 					.attr('id', name + 'ChartInfo')
-					.css('float','left')
-					.css('width','800px')
-			)
-			.append("<br style='clear:both;'/>");
+					
+			);
 			
 		
-		$("#ic_j3m_holder").append($(document.createElement('div')).css('margin','6px')
+		$("#ic_j3m_holder").append($(document.createElement('div'))
+				.css('width',chartWidth)
+				.css('float','left')
+				.css('margin','6px')
 				.css('margin','6px')
 				.css('border','1px solid #ccc').append(inner_span));
 		
@@ -444,14 +442,54 @@ var J3MViewer = function() {
 		j3m_viewer.addItem("ic_data_time.png","Created",j3m.data.exif["timestamp"]);
 		j3m_viewer.addItem("ic_data_device.png","Device Type",j3m.data.exif["model"] + " (" + j3m.data.exif["make"] + ")");
 		j3m_viewer.addItem("ic_data_photo.png","Original Size",j3m.data.exif["width"] + "x" + j3m.data.exif["height"]);
+	
+
+		if(j3m_viewer.sensorData["lightMeterValue"]) {
+			j3m_viewer.addItem("ic_data_light.png","Light Value",j3m_viewer.sensorData["lightMeterValue"][0].value);
+		}
+		else
+			{
+			j3m_viewer.addItem("ic_data_light.png","Light Value","?");
+			
+			}
 		
-		j3m_viewer.addItem("ic_data_light.png","Light Value","?");
-		j3m_viewer.addItem("ic_data_temperature.png","Temperature","?");
-		j3m_viewer.addItem("ic_data_altitude.png","Altitude","?");
+		if(j3m_viewer.sensorData["ambientTemperatureCelsius"]) {
+			j3m_viewer.addItem("ic_data_temperature.png","Temperature",j3m_viewer.sensorData["ambientTemperatureCelsius"][0].value + "C");
+		}
+		else if(j3m_viewer.sensorData["ambientTemperatureCelsius"]) {
+			j3m_viewer.addItem("ic_data_temperature.png","Temperature",j3m_viewer.sensorData["deviceTemperatureCelsius"][0].value + "C");
+		}
+		else
+		{
+			j3m_viewer.addItem("ic_data_temperature.png","Temperature","?");
+			
+		}
 		
-		j3m_viewer.addItem("ic_data_location.png","Location",LocationFormatter.decimalLatToDMS(j3m.data.exif["location"][1]) + "  " + LocationFormatter.decimalLongToDMS(j3m.data.exif["location"][0]));
+		if (j3m_viewer.sensorData["pressureHPAOrMBAR"])
+		{
+			var altitude = Math.round(getAltitude(PRESSURE_STANDARD_ATMOSPHERE,j3m_viewer.sensorData["pressureHPAOrMBAR"][0].value));
 		
-		j3m_viewer.addItem("ic_data_compass.png","Heading","?");
+			j3m_viewer.addItem("ic_data_altitude.png","Altitude",altitude + "M");
+		}
+		else
+		{
+			j3m_viewer.addItem("ic_data_altitude.png","Altitude","?");
+			
+		}
+
+		if (j3m.data.exif["location"])
+		{
+			j3m_viewer.addItem("ic_data_location.png","Location",LocationFormatter.decimalLatToDMS(j3m.data.exif["location"][1]) + "  " + LocationFormatter.decimalLongToDMS(j3m.data.exif["location"][0]));
+		}
+		else
+		{
+			j3m_viewer.addItem("ic_data_location.png","Location","?");
+					
+		}
+		
+		var bearing = getBearingFromAzimuth(j3m_viewer.sensorData["azimuth"][0].value);
+		
+		j3m_viewer.addItem("ic_data_compass.png","Bearing",bearing);
 		
 		var keyId = j3m.intent["pgpKeyFingerprint"];
 		keyId = keyId.substr(keyId.length-8);
@@ -472,10 +510,13 @@ var J3MViewer = function() {
 		
 
 		j3m_viewer.addBreak();
-		
-		j3m_viewer.addLineChart(
-			"lightMeterValue","",j3m_viewer.sensorData["lightMeterValue"]
-		);
+	
+		if(j3m_viewer.sensorData["lightMeterValue"]) {
+				
+			j3m_viewer.addLineChart(
+				"lightMeterValue","",j3m_viewer.sensorData["lightMeterValue"]
+			);
+		}
 		
 		if(j3m_viewer.sensorData["pressureHPAOrMBAR"]) {
 			j3m_viewer.addLineChart(
@@ -498,20 +539,22 @@ var J3MViewer = function() {
 			j3m_viewer.sensorData["acc_y"],
 			j3m_viewer.sensorData["acc_z"]
 		);
+
+
+		if(j3m_viewer.sensorData["ssid"] != undefined) {
+			j3m_viewer.addDonutChart("ssid",j3m_viewer.sensorData["ssid"],"600px");
+		}
 		
 		if(j3m_viewer.sensorData["bluetoothDeviceName"]){        
 			j3m_viewer.addDonutChart(
-				"bluetoothDeviceName",j3m_viewer.sensorData["bluetoothDeviceName"]
+				"bluetoothDeviceName",j3m_viewer.sensorData["bluetoothDeviceName"],"400px"
 			);
 		}
 
 		if(j3m_viewer.sensorData["cellTowerId"] != undefined) {
-			j3m_viewer.addDonutChart("cellTowerId",j3m_viewer.sensorData["cellTowerId"]);
+			j3m_viewer.addDonutChart("cellTowerId",j3m_viewer.sensorData["cellTowerId"],"400px");
 		}
 
-		if(j3m_viewer.sensorData["ssid"] != undefined) {
-			j3m_viewer.addDonutChart("ssid",j3m_viewer.sensorData["ssid"]);
-		}
 	};
 }
 
@@ -571,3 +614,30 @@ var ddVal = degrees + minutes / 60 + seconds / 3600;
 ddVal = ( hemisphere == LocationFormatter.SOUTH || hemisphere == LocationFormatter.WEST ) ? ddVal * -1 : ddVal;
 return LocationFormatter.roundToDecimal( ddVal, 5 );  
 };
+
+
+/** Standard atmosphere, or average sea-level pressure in hPa (millibar) */
+var PRESSURE_STANDARD_ATMOSPHERE = 1013.25;
+
+function getAltitude(pSeaLevel, p) {
+    var coef = 1.0 / 5.255;
+    return 44330.0 * (1.0 - Math.pow(p/pSeaLevel, coef));
+}
+
+
+/**
+ * 
+Here is a simple way to convert from azimuth to bearing:
+With 0 to 90 degree azimuth = 0 to 90 degree bearing
+With 90 to 180 degree azimuth, your bearing = 180 – azimuth
+With 180 to 270 degree azimuth, your bearing =  azimuth – 180
+With 270 to 360 degree azimuth, your bearing = 360 – azimuth
+ */
+function getBearingFromAzimuth (azimuthInRadians)
+{
+	var azimuthInDegress = azimuthInRadians*Math.PI/180;
+	if (azimuthInDegress < 0.0) {
+	    azimuthInDegress += 360.0;
+	}
+	return azimuthInDegress;
+}
