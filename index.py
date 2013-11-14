@@ -373,7 +373,7 @@ if __name__ == "__main__":
 
 		})
 	
-	server.bind(server_port)
-	server.start(50)
+		server.bind(server_port)
+		server.start(50)
 	
 	tornado.ioloop.IOLoop.instance().start()

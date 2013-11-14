@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 15.0.0, SVG Export Plug-In  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd" [
+	<!ENTITY ns_flows "http://ns.adobe.com/Flows/1.0/">
+]>
+<svg version="1.1"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
+	 x="0px" y="0px" width="1024px" height="173px" viewBox="-32 -21.193 1024 173"
+	 overflow="visible" enable-background="new -32 -21.193 1024 173" xml:space="preserve">
+<defs>
+</defs>
+<polyline fill="none" stroke="#231F20" stroke-miterlimit="10" points="345.587,29.087 345.587,37.127 278.938,37.127 
+	278.938,29.259 "/>
+<polyline fill="none" stroke="#231F20" stroke-miterlimit="10" points="545.046,29.087 545.046,37.127 478.397,37.127 
+	478.397,29.259 "/>
+<rect x="901.181" y="23.418" transform="matrix(0.7006 0.7136 -0.7136 0.7006 292.9773 -648.4687)" fill="#231F20" width="36.039" height="2.916"/>
+<rect x="917.742" y="6.856" transform="matrix(0.7135 0.7006 -0.7006 0.7135 280.7571 -636.8933)" fill="#231F20" width="2.916" height="36.039"/>
+<text transform="matrix(1 0 0 1 356.2131 29.1201)" fill="#231F20" font-family="'Roboto-Bold'" font-size="34">Miles              Hours</text>
+<text transform="matrix(1 0 0 1 301.0154 29.0859)" fill="#00AEEF" font-family="'Roboto-Bold'" font-size="34">3</text>
+<text transform="matrix(1 0 0 1 502.0188 29.0859)" fill="#00AEEF" font-family="'Roboto-Bold'" font-size="34">2</text>
+<text transform="matrix(1 0 0 1 679.2229 30.1211)" fill="#6D6E71" font-family="'Roboto-Regular'" font-size="18">Press Enter</text>
+<text transform="matrix(1 0 0 1 62.5295 35.1792)" fill="#231F20" font-family="'Roboto-Bold'" font-size="32">Search within</text>
+<path id="magnifier-icon_6_" fill="#231F20" d="M46.687,32.755l-7.79-7.789c1.139-1.796,1.799-3.923,1.799-6.202
+	c0-6.399-5.207-11.606-11.607-11.606s-11.607,5.207-11.607,11.606c0,6.4,5.207,11.608,11.607,11.608
+	c2.166,0,4.194-0.597,5.932-1.634l7.841,7.842L46.687,32.755z M21.808,18.764c0-4.014,3.266-7.279,7.281-7.279
+	s7.281,3.266,7.281,7.279c0,4.016-3.266,7.281-7.281,7.281S21.808,22.78,21.808,18.764z"/>
+<rect x="0" y="63.141" fill="#F1F2F2" width="960" height="88.412"/>
+</svg>
