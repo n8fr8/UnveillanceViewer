@@ -15,8 +15,10 @@ def terminationHandler(signal, frame):
 def createNewUser(username, password):
 	credentials = copy.deepcopy(credential_pack)
 	credentials['username'] = username
-	
-	return encrypt(credentials, password, p_salt=password_salt, iv=private_iv)
+	"%s.txt" % hashlib.sha1(username + file_salt).hexdigest()
+	f = open(os.path.join(auth_root, "%s.txt" % hashlib.sha1(username + file_salt).hexdigest()), 'wb+')
+	f.write(encrypt(credentials, password, p_salt=password_salt, iv=private_iv))
+	f.close()
 
 def encrypt(plaintext, password, iv=None, p_salt=None):
 	if p_salt is not None:
@@ -140,6 +142,7 @@ class RouteHandler(tornado.web.RequestHandler):
 			
 		print url	
 		format = None
+		as_search_result = False
 		
 		if q_string != "":
 			for kvp in self.request.query.split("&"):
@@ -163,6 +166,9 @@ class RouteHandler(tornado.web.RequestHandler):
 			
 			if q_string == "?":
 				q_string = ""
+			
+			if q_string != "":
+				as_search_result = True
 		
 		if status == 0 and not self.validateUnprivilegedQuery(q_string):
 			print self.validateUnprivilegedQuery(q_string)
@@ -173,14 +179,15 @@ class RouteHandler(tornado.web.RequestHandler):
 		try:
 			r = requests.get("%s%s" % (url, q_string))
 		except requests.exceptions.ConnectionError as e:
-			error_tmpl = Template(filename="%s/layout/error_no_api.html" % static_path)
+			error_tmpl = Template(filename="%s/layout/errors/error_no_api.html" % static_path)
 			self.finish(main_layout.render(
 				template_content=error_tmpl.render(),
 				data={},
 				authentication_holder=''
 			))
 			return
-			
+		
+		tmpl_extras = []
 		if format:
 			self.write(r.text.replace(assets_path, ""))
 		else:
@@ -209,6 +216,12 @@ class RouteHandler(tornado.web.RequestHandler):
 				auth_layout = "login_ctrl"
 			elif status == 2:
 				auth_layout = "search_ctrl"
+				if as_search_result:
+					tmpl_extras.append(
+						Template(
+							filename="%s/layout/searches/save_search.html" % static_path
+						).render()
+					)
 			
 			tmpl = Template(filename="%s/layout/%s.html" % (static_path, layout))
 
@@ -225,7 +238,7 @@ class RouteHandler(tornado.web.RequestHandler):
 			
 			data = json.loads(r.text.replace(assets_path, ""))
 			self.finish(main_layout.render(
-				template_content=tmpl.render(),
+				template_content=tmpl.render(extras="".join(tmpl_extras)),
 				authentication_holder=authentication_holder,
 				authentication_ctrl=authentication_ctrl,
 				data=json.dumps(data)
@@ -274,10 +287,12 @@ class LoginHandler(tornado.web.RequestHandler):
 			elif kv[0] == "password":
 				password = kv[1]
 		
+		print credentials
 		if username is "" or password is "" or username is None or password is None:
 			self.finish({'ok':False})
 			return
 		
+		#createNewUser(username, password)
 		auth = "%s.txt" % hashlib.sha1(username + file_salt).hexdigest()
 		
 		# if this file exists,
@@ -287,18 +302,18 @@ class LoginHandler(tornado.web.RequestHandler):
 			f.close()
 			
 			# decrypt it using supplied password.
-			plaintext = decrypt(ciphertext, password, p_salt=password_salt)			
+			plaintext = decrypt(ciphertext, password, p_salt=password_salt)	
 			
 			# if that works, send back plaintext
 			if plaintext is not None:
 				new_cookie = base64.b64encode(json.dumps(plaintext))
-				print "NEW COOKIE:\n%s" % new_cookie
 				if new_cookie is not None:
 					self.set_secure_cookie(cookie_tag, new_cookie, path="/", expires_days=1)
 					self.finish({'ok':True, 'user' : plaintext})
 					return
 			
 		except IOError as e:
+			print e
 			pass
 		
 		self.finish({'ok':False})
@@ -320,12 +335,53 @@ class LogoutHandler(tornado.web.RequestHandler):
 
 		return 1
 		
-	def get(self):
+	def post(self):
 		if self.getStatus() == 0:
 			self.finish({'ok':False})
 			return
 			
 		self.clear_cookie(cookie_tag)
+		
+		if self.request.body != "":		
+			try:			
+				credentials = json.loads(self.request.body)
+				print credentials
+				
+				auth = "%s.txt" % hashlib.sha1(credentials['user']['username'] + file_salt).hexdigest()
+				
+				f = open(os.path.join(auth_root, auth), 'rb')
+				ciphertext = f.read()
+				f.close()
+			
+				# decrypt it using supplied password.
+				plaintext = decrypt(ciphertext, credentials['password'], p_salt=password_salt)
+			
+				# if that works, encrypt new data
+				if plaintext is not None:
+					new_data = copy.deepcopy(plaintext)
+					new_data['saved_searches'] = credentials['user']['saved_searches']
+					
+					f = open(os.path.join(auth_root, auth), 'wb+')
+					f.write(encrypt(
+						new_data, 
+						credentials['password'],
+						iv=private_iv,
+						p_salt=password_salt
+					))
+					f.close()
+				else:
+					self.finish({'ok':False})
+					return
+					
+			except ValueError as e:
+				print e
+				self.finish({'ok':False})
+				return
+			except TypeError as e:
+				print e
+				self.finish({'ok':False})
+				return
+		
 		self.finish({'ok':True})
 
 static_path = os.path.join(os.path.dirname(__file__), "web")

@@ -1,104 +1,4 @@
-var CurrentSearch = null;
 var j3m_viewer = null;
-
-function Searcher() {
-	var clause_types = [
-		{
-			layout: "by_dateCreated",
-			label: "were created on/between"
-		},
-		{
-			layout: "by_sourceID",
-			label: "were taken by"
-		},
-		{
-			layout: "by_location",
-			label: "were taken near"
-		}
-	];
-	
-	function renderClauseSelector(root) {
-		console.info("render clause: " + root);
-		
-		var clause_holder = $(document.createElement('div'))
-			.attr('id', root + "_params")
-			
-		var param_selector = $(document.createElement('div'))
-			.attr('class', 'parameter_holder');
-
-		var clause_selector = $(document.createElement('select'))
-			.append($(document.createElement('option'))
-				.html("______________")
-				.attr('rel', 'null')
-			)
-			.change(function() {
-				var sel = $(this).find('option:selected')[0];
-				if ($(sel).attr('rel') == "null") {
-					return;
-				}
-				
-				$.ajax({
-					url: "/web/layout/searches/" + clause_types[parseInt($(sel).attr('rel'))].layout + ".html",
-					dataType: 'html',
-					success: function(html) {
-						var p_root = $("#clause_" + $(sel).attr('rel') + "_params")
-							.attr('class','ic_clause_params_holder');
-						console.info(p_root);
-						p_root.empty();
-						p_root.html(html);
-						p_root.append(
-							$(document.createElement('a'))
-								.html("x")
-								.click(function() {
-									$($(this).parent()).parent().remove();
-								})
-								.attr('class','ic_button ic_negate')
-						);
-						p_root.append(
-							$(document.createElement('a'))
-								.html("+")
-								.click(function() {
-									CurrentSearch.addClause();
-									$(this).remove();
-								})
-								.attr('class', 'ic_button unused')
-							
-						);
-					}
-				});
-			});
-	
-		$.each(clause_types, function(idx, item) {
-			clause_selector.append(
-				$(document.createElement('option'))
-					.val(item.layout)
-					.html(item.label)
-					.attr("rel", idx)
-			)
-		});
-		clause_holder.append(clause_selector)
-		clause_holder.append(param_selector)
-		
-		
-		return clause_holder;
-	}
-	
-	this.clauses = [];
-	this.addClause = function(called_by) {
-		if($(called_by).hasClass('unused')) {
-			$(called_by).removeClass('unused');
-		}
-		
-		$("#search_clause_holder").append(
-			$(document.createElement('div'))
-				.attr('id', 'clause_' + this.clauses.length)
-				.append(renderClauseSelector('clause_' + this.clauses.length))
-		);
-		this.clauses.push({
-			clause: this.clauses.length + 1
-		})
-	}
-}
 
 function toggleElement(el) {
 	console.info($(el));
@@ -120,29 +20,8 @@ function swapImage(el, swap) {
 	}
 }
 
-function initSearch() {
-	if(toggleElement('#ic_search')) {
-		$("#ic_search_ctrl").addClass('ic_selected');
-		
-		$("#ic_search").empty();
-		$.ajax({
-			url : "/web/layout/search.html",
-			dataType: "html",
-			success: function(html) {
-				$("#ic_search").html(html);
-				CurrentSearch = new Searcher();
-				$($("#search_submit").children('a')[0]).addClass('ic_selected');
-			}
-		});
-	} else {
-		if($("#ic_search_ctrl").hasClass('ic_selected')) {
-			$("#ic_search_ctrl").removeClass('ic_selected');
-		}
-		
-		if($($("#search_submit").children('a')[0]).hasClass('ic_selected')) {
-			$($("#search_submit").children('a')[0]).removeClass('ic_selected');
-		}
-	}
+function setAsUsed(el) {
+	$(el).removeClass("unused");
 }
 
 function translate(el) {
@@ -171,6 +50,20 @@ function translate(el) {
 		
 		if($(item).hasClass('ic_user_alias') && u_user != undefined) {
 			$(item).html(u_user.username);
+		}
+		
+		if($(item).hasClass('ic_search_term')) {
+			var term_holder = $(document.createElement('div'));
+			var whole_term = $(item).html().split("?")[1].split("&");
+			$.each(whole_term, function(idx, term) {
+				console.info(term);
+				var kvp = term.split("=");
+				term_holder.append(
+					$(document.createElement('span')).html(kvp[0] + ": " + kvp[1])
+				);
+			});
+			$(item).empty();
+			$(item).append(term_holder);
 		}
 	});
 }

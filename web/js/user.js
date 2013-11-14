@@ -109,8 +109,3 @@ function doLogin() {
 		}
 	});
 }
-
-function unpackCredentials() {
-	// un b64
-	// aes decrypt
-}

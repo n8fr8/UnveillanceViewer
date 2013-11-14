@@ -184,11 +184,11 @@ a {
 	font-family:'lato-hairline';
 }
 
-#footer a {
+#footer a, #aux_popup #admin_saved_searches_holder ul li a {
 	color:#292929;
 }
 
-#footer a:hover {
+#footer a:hover, #aux_popup #admin_saved_searches_holder ul li a:hover {
 	color:#b6b6b6;
 }
 
@@ -326,6 +326,20 @@ ul.ic_panel_ul {
 
 ul.ic_panel_ul li {
 	margin:0 0 16px 0;
+}
+
+#aux_popup #admin_saved_searches_holder ul {
+	list-style-type:none;
+	margin:0 10px;
+	padding:0;
+}
+
+#aux_popup #admin_saved_searches_holder ul li {
+	margin-bottom:8px;
+}
+
+#aux_popup #admin_saved_searches_holder ul li a div {
+	font-size:0.7em;
 }
 
 .ic_thumb {
