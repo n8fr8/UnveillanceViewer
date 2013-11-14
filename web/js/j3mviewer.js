@@ -441,21 +441,24 @@ var J3MViewer = function() {
 			
 		}
 		
-		j3m_viewer.addItem("ic_data_time.png","Created","12:13:24 Nov 5");
-		j3m_viewer.addItem("ic_data_device.png","Device Type","Nexus 5");
-		j3m_viewer.addItem("ic_data_photo.png","Original Size","800x600");
+		j3m_viewer.addItem("ic_data_time.png","Created",j3m.data.exif["timestamp"]);
+		j3m_viewer.addItem("ic_data_device.png","Device Type",j3m.data.exif["model"] + " (" + j3m.data.exif["make"] + ")");
+		j3m_viewer.addItem("ic_data_photo.png","Original Size",j3m.data.exif["width"] + "x" + j3m.data.exif["height"]);
 		
-		j3m_viewer.addItem("ic_data_light.png","Light Value","300 LUMS");
-		j3m_viewer.addItem("ic_data_temperature.png","Temperature","10C");
-		j3m_viewer.addItem("ic_data_altitude.png","Altitude","3000 ft");
+		j3m_viewer.addItem("ic_data_light.png","Light Value","?");
+		j3m_viewer.addItem("ic_data_temperature.png","Temperature","?");
+		j3m_viewer.addItem("ic_data_altitude.png","Altitude","?");
 		
-		j3m_viewer.addItem("ic_data_location.png","Location","123,-123");
+		j3m_viewer.addItem("ic_data_location.png","Location",LocationFormatter.decimalLatToDMS(j3m.data.exif["location"][1]) + "  " + LocationFormatter.decimalLongToDMS(j3m.data.exif["location"][0]));
 		
-		j3m_viewer.addItem("ic_data_compass.png","Heading","SW");
-		j3m_viewer.addItem("ic_data_author.png","Captured by","foobar");
+		j3m_viewer.addItem("ic_data_compass.png","Heading","?");
+		
+		var keyId = j3m.intent["pgpKeyFingerprint"];
+		keyId = keyId.substr(keyId.length-8);
+		j3m_viewer.addItem("ic_data_author.png","Captured by",j3m.intent["alias"] + " (" + keyId + ")");
 
 		j3m_viewer.addBreak();
-		
+		j3m_viewer.addBreak();
 		
 		j3m_viewer.addList("Intent",j3m.intent);
 		j3m_viewer.addList("Camera",j3m.data.exif);
@@ -520,3 +523,51 @@ function get_random_color() {
 	}
 	return color;
 }
+
+//A static class for converting between Decimal and DMS formats for a location
+//ported from: http://andrew.hedges.name/experiments/convert_lat_long/
+//Decimal Degrees = Degrees + minutes/60 + seconds/3600
+//more info on formats here: http://www.maptools.com/UsingLatLon/Formats.html
+//use: LocationFormatter.DMSToDecimal( 45, 35, 38, LocationFormatter.SOUTH );
+//or:  LocationFormatter.decimalToDMS( -45.59389 );
+
+function LocationFormatter(){
+};
+
+LocationFormatter.NORTH = 'N';
+LocationFormatter.SOUTH = 'S';
+LocationFormatter.EAST = 'E';
+LocationFormatter.WEST = 'W';
+
+LocationFormatter.roundToDecimal = function( inputNum, numPoints ) {
+var multiplier = Math.pow( 10, numPoints );
+return Math.round( inputNum * multiplier ) / multiplier;
+};
+
+LocationFormatter.decimalToDMS = function( location, hemisphere ){
+if( location < 0 ) location *= -1; // strip dash '-'
+
+var degrees = Math.floor( location );          // strip decimal remainer for degrees
+var minutesFromRemainder = ( location - degrees ) * 60;       // multiply the remainer by 60
+var minutes = Math.floor( minutesFromRemainder );       // get minutes from integer
+var secondsFromRemainder = ( minutesFromRemainder - minutes ) * 60;   // multiply the remainer by 60
+var seconds = LocationFormatter.roundToDecimal( secondsFromRemainder, 2 ); // get minutes by rounding to integer
+
+return degrees + '° ' + minutes + "' " + seconds + '" ' + hemisphere;
+};
+
+LocationFormatter.decimalLatToDMS = function( location ){
+var hemisphere = ( location < 0 ) ? LocationFormatter.SOUTH : LocationFormatter.NORTH; // south if negative
+return LocationFormatter.decimalToDMS( location, hemisphere );
+};
+
+LocationFormatter.decimalLongToDMS = function( location ){
+var hemisphere = ( location < 0 ) ? LocationFormatter.WEST : LocationFormatter.EAST;  // west if negative
+return LocationFormatter.decimalToDMS( location, hemisphere );
+};
+
+LocationFormatter.DMSToDecimal = function( degrees, minutes, seconds, hemisphere ){
+var ddVal = degrees + minutes / 60 + seconds / 3600;
+ddVal = ( hemisphere == LocationFormatter.SOUTH || hemisphere == LocationFormatter.WEST ) ? ddVal * -1 : ddVal;
+return LocationFormatter.roundToDecimal( ddVal, 5 );  
+};
