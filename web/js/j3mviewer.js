@@ -37,13 +37,14 @@ var J3MViewer = function() {
 									);
 
 									j3m_viewer.sensorData['ssid'][j3m_viewer.sensorData['ssid'].length] = sensorEvent;    
-								} else {
+								}						
+								else {
 									if (!j3m_viewer.sensorData[id]) {
 										j3m_viewer.sensorData[id] = new Array();
 									}
 
 									var sensorEvent = new SensorEvent(id, item, timestamp);
-								j3m_viewer.sensorData[id][j3m_viewer.sensorData[id].length] = sensorEvent;
+									j3m_viewer.sensorData[id][j3m_viewer.sensorData[id].length] = sensorEvent;
 								}
 							});
 						} else {
@@ -51,8 +52,33 @@ var J3MViewer = function() {
 								j3m_viewer.sensorData[id] = new Array();
 							}
 
-							var sensorEvent = new SensorEvent(id, item, timestamp);
-							j3m_viewer.sensorData[id][j3m_viewer.sensorData[id].length] = sensorEvent;
+							if(item.cellTowerId) {
+								//"cellTowerId": "79213631", "MCC": "310260", "LAC": "36493
+								if(!j3m_viewer.sensorData['cellTowerId']) {
+									j3m_viewer.sensorData['cellTowerId'] = new Array();
+								}
+
+								var cellName = item.cellTowerId;
+								if (item.MCC)
+									cellName +=  " (MCC:" + item.MCC + ")";
+								
+								if (item.LAC)
+									cellName +=  " (LAC:" + item.LAC + ")";
+								
+								
+								var sensorEvent = new SensorEvent(
+									'cellTowerId', 
+									cellName, 
+									timestamp
+								);
+
+								j3m_viewer.sensorData['cellTowerId'][j3m_viewer.sensorData['cellTowerId'].length] = sensorEvent;    
+							}		
+							else
+							{
+								var sensorEvent = new SensorEvent(id, item, timestamp);
+								j3m_viewer.sensorData[id][j3m_viewer.sensorData[id].length] = sensorEvent;
+							}
 						}
 					});
 				} else {
@@ -289,6 +315,51 @@ var J3MViewer = function() {
 		var newChart = new Chart(ctx).Doughnut(data);
 	}
 	
+	this.addSortedList = function(name,arraySensorData, chartWidth, icon) {
+		arraySensorData.sort(function(a,b){return a.timestamp-b.timestamp});
+		
+		var inner_span = $(document.createElement('div'))
+			.append($(document.createElement('h3')).html(name))
+			.append(
+				$(document.createElement('img'))
+					.attr('src', '/web/images/icons/' + icon)
+					
+			)
+			.append(
+				$(document.createElement('div'))
+					.attr('id', name + 'ChartInfo')
+					
+			);
+			
+			
+		
+		$("#ic_j3m_holder").append($(document.createElement('div'))
+				.css('width',chartWidth)
+				.css('float','left')
+				.css('margin','6px')
+				.css('margin','6px')
+				.css('border','1px solid #ccc').append(inner_span));
+		
+		var sensordata = new Array();
+		
+		$.each(arraySensorData, function(idx, sensorItem) {
+			var key = sensorItem.value.split(" (")[0];
+			if (key.length == 0)
+				key = sensorItem.value.split(" (")[1];
+			
+			sensordata[key] = 1 + (sensordata[key]||0);
+		});
+
+		for(var sensorid in sensordata) {
+			if(sensordata.hasOwnProperty(sensorid)) {
+				
+				$("#" + name + "ChartInfo").append("<div style='padding:3px;margin:3px;float:left;background:#eeeeee'>" + sensorid + " (" + sensordata[sensorid] + ")</div>");
+			}
+		};
+
+
+	}
+	
 	this.addLineChart = function(name, chartType, arraySensorData) {
 		arraySensorData.sort(function(a,b){return a.timestamp-b.timestamp});
 
@@ -498,15 +569,27 @@ var J3MViewer = function() {
 		j3m_viewer.addBreak();
 		j3m_viewer.addBreak();
 		
-		j3m_viewer.addList("Intent",j3m.intent);
-		j3m_viewer.addList("Camera",j3m.data.exif);
-		j3m_viewer.addList("Genealogy",j3m.genealogy);
-		
-		j3m_viewer.addBreak();
 		
 		if (j3m.data.userAppendedData) {
 			j3m_viewer.addList("UserData", j3m.data.userAppendedData);
 		}
+
+		j3m_viewer.addBreak();
+
+		j3m_viewer.addMultiChart(
+			"PitchRollAzimuth","",
+			j3m_viewer.sensorData["pitch"],
+			j3m_viewer.sensorData["roll"],
+			j3m_viewer.sensorData["azimuth"]
+		);
+
+		j3m_viewer.addMultiChart(
+			"Accelerometer","",
+			j3m_viewer.sensorData["acc_x"],
+			j3m_viewer.sensorData["acc_y"],
+			j3m_viewer.sensorData["acc_z"]
+		);
+
 		
 
 		j3m_viewer.addBreak();
@@ -525,36 +608,31 @@ var J3MViewer = function() {
 		}
 		
 		j3m_viewer.addBreak();
-		
-		j3m_viewer.addMultiChart(
-			"PitchRollAzimuth","",
-			j3m_viewer.sensorData["pitch"],
-			j3m_viewer.sensorData["roll"],
-			j3m_viewer.sensorData["azimuth"]
-		);
-
-		j3m_viewer.addMultiChart(
-			"Accelerometer","",
-			j3m_viewer.sensorData["acc_x"],
-			j3m_viewer.sensorData["acc_y"],
-			j3m_viewer.sensorData["acc_z"]
-		);
-
 
 		if(j3m_viewer.sensorData["ssid"] != undefined) {
-			j3m_viewer.addDonutChart("ssid",j3m_viewer.sensorData["ssid"],"600px");
+			//j3m_viewer.addDonutChart("ssid",j3m_viewer.sensorData["ssid"],"600px");
+			j3m_viewer.addSortedList("ssid",j3m_viewer.sensorData["ssid"],"600px","ic_data2_wifi.png");
 		}
 		
 		if(j3m_viewer.sensorData["bluetoothDeviceName"]){        
-			j3m_viewer.addDonutChart(
-				"bluetoothDeviceName",j3m_viewer.sensorData["bluetoothDeviceName"],"400px"
-			);
+		//	j3m_viewer.addDonutChart("bluetoothDeviceName",j3m_viewer.sensorData["bluetoothDeviceName"],"400px");
+			j3m_viewer.addSortedList("bluetoothDeviceName",j3m_viewer.sensorData["bluetoothDeviceName"],"400px","ic_data2_bluetooth.png");
+
 		}
 
 		if(j3m_viewer.sensorData["cellTowerId"] != undefined) {
-			j3m_viewer.addDonutChart("cellTowerId",j3m_viewer.sensorData["cellTowerId"],"400px");
+		//	j3m_viewer.addDonutChart("cellTowerId",j3m_viewer.sensorData["cellTowerId"],"400px");
+			j3m_viewer.addSortedList("cellTowerId",j3m_viewer.sensorData["cellTowerId"],"400px","ic_data2_cell.png");
+
 		}
 
+		j3m_viewer.addBreak();
+
+		j3m_viewer.addList("Intent",j3m.intent);
+		j3m_viewer.addList("Camera",j3m.data.exif);
+		j3m_viewer.addList("Genealogy",j3m.genealogy);
+		
+		j3m_viewer.addBreak();
 	};
 }
 
