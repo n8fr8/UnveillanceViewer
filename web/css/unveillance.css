@@ -33,7 +33,7 @@ body {
 	width:100%;
 	float:left;
 	top:0;
-	height:66px;
+	height:56px;
 }
 
 #header #header_ctrl {
@@ -76,25 +76,25 @@ body {
 #content {
 	z-index:1;
 	position:relative;
-	width:100%;
 	clear:both;
+	overflow:hidden;
 }
 
 #content .ic_content_holder {
-	margin:4px 10px;
 	font-family:'lato-regular';
-	width:99%;
+	width:100%;
+	margin:0px;
+	padding:0px;
 }
 
 #content #ic_j3m_holder.ic_content_holder {
-	width:95%;
 }
 
 #content #ic_j3m_holder.ic_content_holder #map {
 	height:400px;
 }
 
-#content #map.ic_content_holder {
+#content #map .ic_content_holder {
 	margin-bottom:40px;
 }
 
@@ -141,12 +141,18 @@ body {
 
 h1, h2, h3 {
 	margin-top:0;
-	margin-bottom:4px;
+	margin-bottom:0px;
 	color:#fff;
 	background-color:#292929;
 	font-weight:bold;
 	padding:2px;
 	font-family:'lato-hairline';
+}
+
+h2
+{
+	background-color:#cccccc;
+	color:#292929;
 }
 
 h4, h5 {
@@ -162,7 +168,6 @@ p {
 
 #content .ic_content_holder .ic_as_list {
 	font-size:0.7em;
-	padding:3px;
 }
 
 #content .ic_content_holder .ic_status_label {
@@ -207,26 +212,10 @@ a {
 	font-weight:normal;
 }
 
-#content #ic_opts a {
-	font-size:0.5em;
-	font-weight:normal;
-	color:#000000;
-	background-color:#cbdde6;
-	border:1px solid #a0c2d3;
-}
 
-input {
-	font-family:arial;
-	font-size:0.8em;
-	background-color:#b6b6b6;
-	color:#4d4d4d;
-	border:1px solid #4d4d4d;
-}
-
-select {
+input, select {
 	font-size:0.8em;
 	font-family:arial;
-	background-color:#b6b6b6;
 	color:#4d4d4d;
 	border:1px solid #4d4d4d;
 }
@@ -309,7 +298,7 @@ select {
 }
 
 #content ul.ic_list_vertical li {
-	padding: 2px 0 10px 0;
+	padding: 2px 0 0px 0;
 }
 
 #content ul.ic_list_grid li {
@@ -360,4 +349,39 @@ ul.ic_panel_ul li {
 
 #ic_submission_thumb img {
 	width:inherit;
+}
+
+#ic_submission_info
+{
+background-color:#eeeeee;
+border:1px solid #cccccc;
+padding:3px;
+width:100%;
+margin:0px;
+margin-top:0px;
+margin-bottom:12px;
+text-align:center;
+}
+
+.ic_item_box
+{
+	float: left;
+	width: 31%;
+	margin-right:12px;
+	margin-bottom:24px;
+	padding:6px;
+}
+
+.ic_map_box
+{
+	height:400px;
+	width:50%;
+}
+
+#logo_icon
+{
+ margin:3px;
+ height:42px;
+ width:42px;
+vertical-align:top;
 }

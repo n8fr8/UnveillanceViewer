@@ -2,12 +2,12 @@
 <div id="ic_j3m_holder" class="ic_content_holder">
 	
 	<div id="map">
-		<div id="map1" style="width:45%;height:400px;float:left;"></div>
-		<div id="map2" style="width:45%;height:400px;"></div>
+		<div id="map1" class="ic_map_box" style="float:left;"></div>
+		<div id="map2" class="ic_map_box"></div>
 		
 	</div>
 	
-	<div id="ic_submission_info" class="ic_content_holder">
+	<div id="ic_submission_info">
 	
 	<div style="padding:6px">
 	<div style="float:left;padding:3px;margin:12px">
@@ -25,6 +25,10 @@
 			<span class="translatable ic_status_value">{{ media_verified }}</span>
 		
 	</div>
+	<div style="float:left;padding:3px;margin:12px">
+	<input type="button" value="Download Media"/>
+	<input type="button" value="Download J3M Metadata" onclick="location.href='/submission/{{ _id }}/j3m/';"/>
+	</div>	
 	<br style="clear:both;"/>
 	</div>
 </div>
