@@ -1,1 +1,27 @@
-<h2>Submissions</h2>
+<script>
+	var points = new Array();
+</script>
+
+{{#.}}
+<script>
+	var lon_lat = [{{ data.exif.location }}];
+	points.push(lon_lat);
+</script>
+{{/.}}
+
+<h2>Submissions matching your search: <span id="ic_num_results"></span><span id="ic_opts"></span></h2>
+<div id="map" class="ic_content_holder"></div>
+<ol class="ic_content_holder" style="width:90%;">
+	{{#.}}
+	<li class="ic_as_list">
+		<a href="/submission/{{ _id }}/">{{ _id }}</a>: (submitted by <span class="ic_searchable">{{ intent.alias }}</span>)<br />
+		Admitted on <span class="translatable ic_date ic_searchable">{{ date_admitted }}</span><br />
+		Created on <span class="translatable ic_date ic_searchable">{{ genealogy.dateCreated }}</span>
+	</li>
+	{{/.}}
+</ol>
+${ extras }
+<script>
+	$("#ic_num_results").html(points.length);
+	renderJ3MMap(points);
+</script>

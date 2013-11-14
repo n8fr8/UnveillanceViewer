@@ -20,6 +20,46 @@ var User = function() {
 	this.save = function() {
 		localStorage.setItem('user', JSON.stringify(this.asJson()));
 	}
+	
+	this.saveSearch = function(path_to_search) {
+		this.saved_searches.push(path_to_search);
+		this.save();
+	}
+	
+	this.removeSearch = function(path_to_search) {
+		if(this.hasSearch(path_to_search)) {
+			var idx = this.saved_searches.indexOf(path_to_search);
+			this.saved_searches.splice(idx, 1);
+		}
+		this.save();
+	}
+	
+	this.hasSearch = function(path_to_search) {
+		if(this.saved_searches.indexOf(path_to_search) >= 0) {
+			return true;
+		}
+
+		return false;
+	}
+	
+	this.saveDataAndLogout = function() {
+		var data = {
+			user : this.asJson(),
+			password: $("#ic_password").val()
+		};
+		console.info(data);
+		
+		$.ajax({
+			url : "/logout/",
+			type: "POST",
+			data: JSON.stringify(data),
+			dataType: "json",
+			success: function(json) {
+				window.history.back();
+				window.location.reload();
+			}
+		});
+	}
 };
 
 function doAdmin() {
@@ -35,10 +75,15 @@ function doAdmin() {
 function doLogout() {
 	$.ajax({
 		url : "/logout/",
+		type: "POST",
 		dataType: "json",
-		data: u_user.asJson(),
 		success: function(json) {
-			window.location.reload();
+			if(json.ok) {
+				window.history.back();
+				window.location.reload();
+			} else {
+				$("#ic_bad_logout_holder").css('display','block');
+			}
 		}
 	});
 }

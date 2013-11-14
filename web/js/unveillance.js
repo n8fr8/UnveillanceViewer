@@ -196,10 +196,11 @@ function renderData(data) {
 	u_user = new User();
 	
 	if(data.result == 200) {
+		console.info(data.data);
 		renderUi(data.data);
 	} else {
 		$.ajax({
-			url : "/web/layout/error_no_results.html",
+			url : "/web/layout/errors/error_no_results.html",
 			dataType: "html",
 			success: function(html) {
 				$("#content").html(html);
@@ -254,6 +255,16 @@ function killAuxPopup() {
 		this.get('#login', function(context) {
 			$.ajax({
 				url: "/web/layout/authentication/do_login.html",
+				dataType: "html",
+				success: function(html) {
+					renderAuxContent(html);
+				}
+			});
+		});
+		
+		this.get('#logout', function(context) {
+			$.ajax({
+				url: "/web/layout/authentication/do_logout.html",
 				dataType: "html",
 				success: function(html) {
 					renderAuxContent(html);

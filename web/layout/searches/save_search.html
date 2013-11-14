@@ -1,0 +1,38 @@
+<script>
+	function updateOpts() {
+		if(u_user != null && u_user != undefined) {
+			$("#ic_opts").empty();
+			if(u_user.hasSearch(window.location.pathname + window.location.search)) {
+				$("#ic_opts").append(remove_save);
+			} else {
+				$("#ic_opts").append(do_save);
+			}
+		}
+	}
+	
+	var do_save = $(document.createElement('a'))
+		.html('Save this search?')
+		.attr({
+			'class' : 'ic_button'
+		})
+		.click(function() {
+			if(u_user != null && u_user != undefined) {
+				u_user.saveSearch(window.location.pathname + window.location.search);
+				updateOpts();
+			}
+		});
+	
+	var remove_save = $(document.createElement('a'))
+		.html('Search saved! (remove?)')
+		.attr({
+			'class' : 'ic_button'
+		})
+		.click(function() {
+			if(u_user != null && u_user != undefined) {
+				u_user.removeSearch(window.location.pathname + window.location.search);
+				updateOpts();
+			}
+		});
+	
+	updateOpts();
+</script>
