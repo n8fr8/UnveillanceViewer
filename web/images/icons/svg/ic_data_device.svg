@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 15.0.0, SVG Export Plug-In  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd" [
+	<!ENTITY ns_flows "http://ns.adobe.com/Flows/1.0/">
+]>
+<svg version="1.1"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
+	 x="0px" y="0px" width="60px" height="60px" viewBox="-13.792 0 60 60"
+	 overflow="visible" enable-background="new -13.792 0 60 60" xml:space="preserve">
+<defs>
+</defs>
+<path id="smartphone-4-icon_1_" fill="#231F20" d="M27.635,0H4.783C2.142,0,0,2.142,0,4.785v50.144c0,2.641,2.142,4.782,4.783,4.782
+	h22.852c2.64,0,4.781-2.142,4.781-4.782V4.785C32.416,2.142,30.274,0,27.635,0z M13.672,4.38h5.362c0.32,0,0.581,0.26,0.581,0.58
+	s-0.261,0.58-0.581,0.58h-5.362c-0.319,0-0.579-0.26-0.579-0.58S13.353,4.38,13.672,4.38z M16.354,56.964
+	c-1.28,0-2.318-1.036-2.318-2.318c0-1.28,1.038-2.318,2.318-2.318s2.318,1.038,2.318,2.318
+	C18.672,55.928,17.634,56.964,16.354,56.964z M28.781,49.818H3.636V9.892h25.146V49.818z"/>
+</svg>

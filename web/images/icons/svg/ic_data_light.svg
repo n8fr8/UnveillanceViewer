@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 15.0.0, SVG Export Plug-In  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd" [
+	<!ENTITY ns_flows "http://ns.adobe.com/Flows/1.0/">
+]>
+<svg version="1.1"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
+	 x="0px" y="0px" width="60px" height="60px" viewBox="-14.322 -1.69 60 60"
+	 overflow="visible" enable-background="new -14.322 -1.69 60 60" xml:space="preserve">
+<defs>
+</defs>
+<path id="light-bulb-2-icon_1_" fill="#231F20" d="M23.423,43.207H11.379c-0.846,0-1.529,0.685-1.529,1.529
+	c0,0.844,0.684,1.528,1.529,1.528h12.045c0.844,0,1.527-0.685,1.527-1.528C24.951,43.892,24.268,43.207,23.423,43.207z
+	 M23.148,48.296H11.653c-0.845,0-1.528,0.686-1.528,1.529c0,0.845,0.684,1.528,1.528,1.528h11.495c0.844,0,1.528-0.684,1.528-1.528
+	C24.677,48.981,23.992,48.296,23.148,48.296z M11.732,53.315c2.976,2.751,3.282,3.304,4.47,3.304h2.288
+	c1.162,0,1.447-0.513,4.579-3.304H11.732z M34.801,16.69c0,10.35-8.9,16.149-8.9,24.316h-4.053
+	c0.004-10.065,8.827-15.367,8.827-24.316c0-16.75-26.548-16.776-26.548,0c0,8.94,8.67,14.014,8.871,24.316H8.9
+	C8.9,32.84,0,27.04,0,16.69C0-5.552,34.801-5.574,34.801,16.69z"/>
+</svg>
