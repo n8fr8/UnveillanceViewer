@@ -121,9 +121,7 @@ var J3MViewer = function() {
 	this.addItem = function(icon, itemLabel, itemValue) {
 		
 		var newItem = $(document.createElement('div'))
-		.css('float','left')
-		.css('width','31%')
-		.css('margin','12px');
+ 		.attr('class','ic_item_box');
 		
 		newItem.append($(document.createElement('img'))
 				.attr('src', '/web/images/icons/' + icon)
@@ -134,8 +132,7 @@ var J3MViewer = function() {
 		
 		newItem.append("<b>" + itemLabel + "</b>").append("<br/>");
 		newItem.append(itemValue);
-		
-		newItem.append("<br style='clear:left;'/>");
+		//newItem.append("<br style='clear:left;'/>");
 		
 		$("#ic_j3m_holder").append(newItem);
 	
@@ -258,11 +255,18 @@ var J3MViewer = function() {
 		var newChart = new Chart(ctx).Radar(chartData);
 	}
 	
-	this.addDonutChart = function(name,arraySensorData, chartWidth) {
+	this.addDonutChart = function(name,title,icon,arraySensorData, chartWidth) {
 		arraySensorData.sort(function(a,b){return a.timestamp-b.timestamp});
 		
-		var inner_span = $(document.createElement('div'))
-			.append($(document.createElement('h3')).html(name))
+		 var inner_span = $(document.createElement('div'));
+                inner_span.css('text-align','center');
+
+                        inner_span.append(
+                                $(document.createElement('img'))
+                                        .attr('src', '/web/images/icons/' + icon)
+
+                        )
+                        .append("<br/><b>" + title + "</b><br style='clear:both;'/><br/>")
 			.append(
 					$(document.createElement('div'))
 					.attr('id', name + 'ChartHolder')
@@ -274,11 +278,11 @@ var J3MViewer = function() {
 									'width': 300
 							}))
 			)
-			.append(
-				$(document.createElement('div'))
-					.attr('id', name + 'ChartInfo')
-					
-			);
+                        .append(
+                                $(document.createElement('div'))
+                                        .attr('id', name + 'ChartInfo')
+
+                        );
 			
 		
 		$("#ic_j3m_holder").append($(document.createElement('div'))
@@ -307,7 +311,7 @@ var J3MViewer = function() {
 				chartEntry.color = get_random_color();
 				data.push(chartEntry);
 				
-				$("#" + name + "ChartInfo").append("<div style='background:" + chartEntry.color + ";color:#ffffff;float:left;padding:6px;margin:3px;'>" + sensorid + " (" + sensordata[sensorid] + ")</div>");
+				$("#" + name + "ChartInfo").append("<div style='background:" + chartEntry.color + ";color:#ffffff;float:left;padding:3px;margin:3px;font-size:0.8em;'>" + sensorid + " (" + sensordata[sensorid] + ")</div>");
 			}
 		};
 
@@ -315,16 +319,18 @@ var J3MViewer = function() {
 		var newChart = new Chart(ctx).Doughnut(data);
 	}
 	
-	this.addSortedList = function(name,arraySensorData, chartWidth, icon) {
+	this.addSortedList = function(name,title,arraySensorData, chartWidth, icon) {
 		arraySensorData.sort(function(a,b){return a.timestamp-b.timestamp});
 		
-		var inner_span = $(document.createElement('div'))
-			.append($(document.createElement('h3')).html(name))
-			.append(
+		var inner_span = $(document.createElement('div'));
+		inner_span.css('text-align','center');
+		
+			inner_span.append(
 				$(document.createElement('img'))
 					.attr('src', '/web/images/icons/' + icon)
 					
 			)
+			.append("<br/><b>" + title + "</b><br style='clear:both;'/><br/>")
 			.append(
 				$(document.createElement('div'))
 					.attr('id', name + 'ChartInfo')
@@ -337,7 +343,7 @@ var J3MViewer = function() {
 				.css('width',chartWidth)
 				.css('float','left')
 				.css('margin','6px')
-				.css('margin','6px')
+				.css('padding','3px')
 				.css('border','1px solid #ccc').append(inner_span));
 		
 		var sensordata = new Array();
@@ -353,7 +359,7 @@ var J3MViewer = function() {
 		for(var sensorid in sensordata) {
 			if(sensordata.hasOwnProperty(sensorid)) {
 				
-				$("#" + name + "ChartInfo").append("<div style='padding:3px;margin:3px;float:left;background:#eeeeee'>" + sensorid + " (" + sensordata[sensorid] + ")</div>");
+				$("#" + name + "ChartInfo").append("<div style='padding:3px;margin:3px;background:#eeeeee'>" + sensorid + " (" + sensordata[sensorid] + ")</div>");
 			}
 		};
 
@@ -370,12 +376,12 @@ var J3MViewer = function() {
 					.attr('id', name + 'Chart')
 					.prop({
 						'height' : 300,
-						'width': $("#ic_j3m_holder").width()/2.2
+						'width' : $("#ic_j3m_holder").width()/2.1
 					})
 			);
   		$("#ic_j3m_holder").append($(document.createElement('div'))
   				.css('float', 'left')
-  				.css('width', '45%')
+  				.css('width', '48%')
   				.css('margin','6px')
   				.css('border','1px solid #ccc').append(inner_span));
 
@@ -417,14 +423,14 @@ var J3MViewer = function() {
   		var newChart = new Chart(ctx).Line(data);
 	}
 	
-	this.addMultiChart = function(name, chartType, arraySensorData1,arraySensorData2,arraySensorData3
+	this.addMultiChart = function(name, title, arraySensorData1,arraySensorData2,arraySensorData3
 	) {
 		arraySensorData1.sort(function(a,b){return a.timestamp-b.timestamp});
 		arraySensorData2.sort(function(a,b){return a.timestamp-b.timestamp});
 		arraySensorData3.sort(function(a,b){return a.timestamp-b.timestamp});
 
 		var inner_span = $(document.createElement('div'))
-			.append($(document.createElement('h3')).html(name))
+			.append($(document.createElement('h3')).html(title))
 			.append($(document.createElement('canvas'))
 				.attr('id', name + "Chart")
 				.prop({
@@ -509,8 +515,10 @@ var J3MViewer = function() {
 			j3m_viewer.loadMap(j3m.data.exif.location[0],j3m.data.exif.location[1],'map2',17);
 			
 		}
-		
-		j3m_viewer.addItem("ic_data_time.png","Created",j3m.data.exif["timestamp"]);
+	
+		//j3m_viewer.addItem("ic_data_time.png","Created",(j3m.data.exif["timestamp"]));
+		j3m_viewer.addItem("ic_data_time.png","Created Timestamp",timeConverter(j3m.genealogy["dateCreated"]));
+
 		j3m_viewer.addItem("ic_data_device.png","Device Type",j3m.data.exif["model"] + " (" + j3m.data.exif["make"] + ")");
 		j3m_viewer.addItem("ic_data_photo.png","Original Size",j3m.data.exif["width"] + "x" + j3m.data.exif["height"]);
 	
@@ -564,9 +572,8 @@ var J3MViewer = function() {
 		
 		var keyId = j3m.intent["pgpKeyFingerprint"];
 		keyId = keyId.substr(keyId.length-8);
-		j3m_viewer.addItem("ic_data_author.png","Captured by",j3m.intent["alias"] + " (" + keyId + ")");
+		j3m_viewer.addItem("ic_data_author.png","Captured by",j3m.intent["alias"] + " (0x" + keyId + ")");
 
-		j3m_viewer.addBreak();
 		j3m_viewer.addBreak();
 		
 		
@@ -577,14 +584,14 @@ var J3MViewer = function() {
 		j3m_viewer.addBreak();
 
 		j3m_viewer.addMultiChart(
-			"PitchRollAzimuth","",
+			"PitchRollAzimuth","Pitch (R), Roll (G) &amp; Azimuth (B)",
 			j3m_viewer.sensorData["pitch"],
 			j3m_viewer.sensorData["roll"],
 			j3m_viewer.sensorData["azimuth"]
 		);
 
 		j3m_viewer.addMultiChart(
-			"Accelerometer","",
+			"Accelerometer","Accelerometer (X (R), Y (G), Z (B))",
 			j3m_viewer.sensorData["acc_x"],
 			j3m_viewer.sensorData["acc_y"],
 			j3m_viewer.sensorData["acc_z"]
@@ -610,27 +617,28 @@ var J3MViewer = function() {
 		j3m_viewer.addBreak();
 
 		if(j3m_viewer.sensorData["ssid"] != undefined) {
-			//j3m_viewer.addDonutChart("ssid",j3m_viewer.sensorData["ssid"],"600px");
-			j3m_viewer.addSortedList("ssid",j3m_viewer.sensorData["ssid"],"600px","ic_data2_wifi.png");
+			j3m_viewer.addDonutChart("ssid","Local Wifi Devices","ic_data2_wifi.png",j3m_viewer.sensorData["ssid"],"48%");
+			//j3m_viewer.addSortedList("ssid","Local Wifi Devices",j3m_viewer.sensorData["ssid"],"600px","ic_data2_wifi.png");
 		}
 		
 		if(j3m_viewer.sensorData["bluetoothDeviceName"]){        
-		//	j3m_viewer.addDonutChart("bluetoothDeviceName",j3m_viewer.sensorData["bluetoothDeviceName"],"400px");
-			j3m_viewer.addSortedList("bluetoothDeviceName",j3m_viewer.sensorData["bluetoothDeviceName"],"400px","ic_data2_bluetooth.png");
+		//	j3m_viewer.addDonutChart("bluetoothDeviceName",j3m_viewer.sensorData["bluetoothDeviceName"],"500px");
+			j3m_viewer.addSortedList("bluetoothDeviceName","Local Bluetooth Devices",j3m_viewer.sensorData["bluetoothDeviceName"],"48%","ic_data2_bluetooth.png");
 
 		}
 
 		if(j3m_viewer.sensorData["cellTowerId"] != undefined) {
 		//	j3m_viewer.addDonutChart("cellTowerId",j3m_viewer.sensorData["cellTowerId"],"400px");
-			j3m_viewer.addSortedList("cellTowerId",j3m_viewer.sensorData["cellTowerId"],"400px","ic_data2_cell.png");
+			j3m_viewer.addSortedList("cellTowerId","Mobile Network ID",j3m_viewer.sensorData["cellTowerId"],"48%","ic_data2_cell.png");
 
 		}
 
+
 		j3m_viewer.addBreak();
 
-		j3m_viewer.addList("Intent",j3m.intent);
-		j3m_viewer.addList("Camera",j3m.data.exif);
-		j3m_viewer.addList("Genealogy",j3m.genealogy);
+//		j3m_viewer.addList("Intent",j3m.intent);
+//		j3m_viewer.addList("Camera",j3m.data.exif);
+//		j3m_viewer.addList("Genealogy",j3m.genealogy);
 		
 		j3m_viewer.addBreak();
 	};
@@ -719,3 +727,16 @@ function getBearingFromAzimuth (azimuthInRadians)
 	}
 	return azimuthInDegress;
 }
+
+function timeConverter(UNIX_timestamp){
+ var a = new Date(UNIX_timestamp);
+ var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+     var year = a.getFullYear();
+     var month = months[a.getMonth()];
+     var date = a.getDate();
+     var hour = a.getHours();
+     var min = a.getMinutes();
+     var sec = a.getSeconds();
+     var time = date+' '+month+' '+year+' '+hour+':'+min+':'+sec ;
+     return time;
+ }
