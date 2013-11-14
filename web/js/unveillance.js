@@ -145,8 +145,13 @@ function initSearch() {
 	}
 }
 
-function translate() {
-	$.each($(".translatable"), function(idx, item) {
+function translate(el) {
+	var root = $(".translatable");
+	if(el != undefined) {
+		root = $(el + " .translatable");
+	}
+	
+	$.each(root, function(idx, item) {
 		if($(item).hasClass('ic_date')) {
 			var date = moment(Number($(item).html()));
 			$(item).html(date.format("MM-DD-YYYY HH:mm"));
@@ -162,6 +167,10 @@ function translate() {
 						'class' : "ic_icon"
 					})
 			);
+		}
+		
+		if($(item).hasClass('ic_user_alias') && u_user != undefined) {
+			$(item).html(u_user.username);
 		}
 	});
 }
@@ -231,6 +240,7 @@ function renderAuxContent(html) {
 	$("#aux_popup").html(html);
 	if($("#aux_popup").css('display') != "block") {
 		$("#aux_popup").css('display','block');
+		translate("#aux_popup");
 	}
 }
 

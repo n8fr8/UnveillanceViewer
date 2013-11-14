@@ -100,7 +100,7 @@ body {
 
 #aux_popup {
 	z-index:3;
-	position:absolute;
+	position:fixed;
 	width:80%;
 	border:1px solid #000;
 	height:540px;
@@ -109,6 +109,10 @@ body {
 	display:none;
 	background-color:#fff;
 	overflow:hidden;
+}
+
+#aux_popup div, #aux_popup ul, #aux_popup p {
+	margin:10px;
 }
 
 #aux_popup #ic_bad_login_holder {
@@ -137,6 +141,13 @@ h1, h2, h3 {
 	font-weight:bold;
 	padding:2px;
 	font-family:'lato-hairline';
+}
+
+h4, h5 {
+	margin:0;
+	padding:2px;
+	font-family:'lato-hairline';
+	font-weight:bold;
 }
 
 p {
@@ -219,6 +230,14 @@ select {
 	cursor:pointer;
 }
 
+.ic_panel_header {
+	background-color:#cbdde6;
+	border:1px solid #a0c2d3;
+	padding:4px;
+	display:block;
+	width:98%;
+}
+
 .ic_error {
 	background-color:#ffbeaf;
 	border:1px solid #ff7462;
@@ -283,6 +302,16 @@ select {
 	float:left;
 	padding: 4px;
 	margin:0 6px;
+}
+
+ul.ic_panel_ul {
+	list-style-type:none;
+	margin:0;
+	padding:0;
+}
+
+ul.ic_panel_ul li {
+	margin:0 0 16px 0;
 }
 
 .ic_thumb {

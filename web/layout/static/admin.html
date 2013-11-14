@@ -1,7 +1,15 @@
-<h3>Admin <a class="ic_exit" rel="aux_popup">[x]</a></h3>
-<h4>Hello, {{ username }}</h4>
-<ul>
+<h3><span class="translatable ic_user_alias">Admin</span> <a class="ic_exit" rel="aux_popup">[x]</a></h3>
+<ul class="ic_panel_ul">
 	<li>
-		<h5>My Saved Searches</h5>
+		<a class="ic_button ic_panel_header" onclick="toggleElement('#admin_advanced_search_holder');">Advanced Search</a>
+		<div id="admin_advanced_search_holder">
+		
+		</div>
+	</li>
+	<li>
+		<a class="ic_button ic_panel_header" onclick="toggleElement('#admin_saved_searches_holder');">My Saved Searches</a>
+		<div id="admin_saved_searches_holder">
+		
+		</div>
 	</li>
 </ul>

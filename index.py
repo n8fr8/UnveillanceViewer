@@ -289,8 +289,7 @@ class LoginHandler(tornado.web.RequestHandler):
 			# decrypt it using supplied password.
 			plaintext = decrypt(ciphertext, password, p_salt=password_salt)			
 			
-			# if that works, reencrypt plaintext with random IV and send it back
-			# if you can decrypt it on your end, that's your cookie for now on.
+			# if that works, send back plaintext
 			if plaintext is not None:
 				new_cookie = base64.b64encode(json.dumps(plaintext))
 				print "NEW COOKIE:\n%s" % new_cookie
