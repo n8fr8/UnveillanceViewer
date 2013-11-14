@@ -1,27 +1,33 @@
 <h2>Submission {{ _id }}</h2>
-<div id="ic_submission_thumb"><img src="/submission/{{ _id }}/media/thumb/" /></div>
-<div id="ic_submission_info" class="ic_content_holder">
-	<p>
-		<span class="ic_label">date admitted:</span> <span class="translatable ic_date">{{ date_admitted }}</span>
-	</p>
-	<p>
-		<span class="ic_label">mime type:</span> <span>{{ mime_type }}</span>
-	</p>
-	<ul class="ic_status_holder ic_note_bene" style="width:75%;">
-		<li>
-			<span class="ic_status_label">J3M signed and verified?</span>
-			<span class="translatable ic_status_value">{{ j3m_verified }}</span>
-		</li>
-		<li>
-			<span class="ic_status_label">Media content verified?</span>
-			<span class="translatable ic_status_value">{{ media_verified }}</span>
-		</li>
-	</ul>
-</div>
 <div id="ic_j3m_holder" class="ic_content_holder">
-	<div id="img-mask" style="height:400px;overflow:hidden;">
-		<div id="map"></div>
+	
+	<div id="map">
+		<div id="map1" style="width:45%;height:400px;float:left;"></div>
+		<div id="map2" style="width:45%;height:400px;"></div>
+		
 	</div>
+	
+	<div id="ic_submission_info" class="ic_content_holder">
+	
+	<div style="padding:6px">
+	<div style="float:left;padding:3px;margin:12px">
+		<span class="ic_label">Admitted:</span> <span class="translatable ic_date">{{ date_admitted }}</span>
+	</div>
+	<div style="float:left;padding:3px;margin:12px">
+		<span class="ic_label">Type:</span> <span>{{ mime_type }}</span>
+	</div>
+	<div style="float:left;padding:3px;margin:12px">
+			<span class="ic_status_label">Signature Verified?</span>
+			<span class="translatable ic_status_value">{{ j3m_verified }}</span>
+	</div>
+	<div style="float:left;padding:3px;margin:12px">
+			<span class="ic_status_label">Media Verified?</span>
+			<span class="translatable ic_status_value">{{ media_verified }}</span>
+		
+	</div>
+	<br style="clear:both;"/>
+	</div>
+</div>
 </div>
 
 <script>

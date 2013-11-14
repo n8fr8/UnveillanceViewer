@@ -40,8 +40,7 @@ body {
 	position:relative;
 	float:right;
 	color:#fff;
-	top:-1.5em;
-	font-size:0.8em;
+	top:-2em;
 	margin-right:10px;
 }
 
@@ -52,7 +51,6 @@ body {
 	clear:both;
 	overflow:hidden;
 	display:none;
-	font-size:0.8em;
 }
 
 #ic_search #search_clause_holder {
@@ -89,7 +87,7 @@ body {
 }
 
 #content #ic_j3m_holder.ic_content_holder {
-	width:75%;
+	width:95%;
 }
 
 #content #ic_j3m_holder.ic_content_holder #map {
@@ -137,16 +135,17 @@ h1, h2, h3 {
 	color:#fff;
 	background-color:#292929;
 	font-weight:bold;
-	padding:2px 0;
+	padding:2px;
 	font-family:'lato-hairline';
 }
 
 p {
-	font-size:0.7em;
+	font-size:0.8em;
 }
 
 #content .ic_content_holder .ic_as_list {
 	font-size:0.7em;
+	padding:3px;
 }
 
 #content .ic_content_holder .ic_status_label {
