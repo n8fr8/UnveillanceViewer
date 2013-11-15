@@ -49,6 +49,7 @@ body {
 	position:relative;
 	clear:both;
 	overflow:hidden;
+	margin-bottom:100px;
 }
 
 #content .ic_content_holder {
@@ -120,7 +121,10 @@ body {
 	font-size:0.9em;
 	margin-bottom:10px;
 	right:0;
-	float:right
+	float:right;
+	background-color:#fff;
+	border:1px solid #292929;
+	padding:4px 10px;
 }
 
 h1, h2, h3 {

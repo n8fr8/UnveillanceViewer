@@ -26,22 +26,26 @@ var ICSearch = function() {
 		var submission_clause_selectors = [
 			{
 				label: "were created on or between...",
-				tmpl: "by_dateCreated.html"
+				tmpl: "by_dateCreated.html",
+				root: "dateCreated"
 			},
 			{
 				label: "were taken near...",
-				tmpl: "by_location.html"
+				tmpl: "by_location.html",
+				root: "location"
 			},
 			{
 				label: "were taken by...",
-				tmpl: "by_sourceID.html"
+				tmpl: "by_sourceID.html",
+				root: "sourceID"
 			}
 		];
 		
 		var source_clause_selectors = [
 			{
 				label: "goes by alias...",
-				tmpl: "by_source_alias.html"
+				tmpl: "by_source_alias.html",
+				root: "alias"
 			}
 		];
 		
@@ -149,7 +153,25 @@ var ICSearch = function() {
 		return false;
 	}
 	
-	this.submit = function() {
+	this.validateQuery = function(query) {
+		return true;
+	}
 	
+	this.submit = function() {
+		var query = [];
+		
+		$.each(this.clauses, function(idx, item) {
+			var clause = {}
+			$.each($(item.render).find("input[type=text]"), function(idx_, item_) {
+				clause[$(item_).attr('name')] = $(item_).val();
+			});
+			
+			var tag = $($(item.render).find("input[type=hidden]")[0]).val();
+			query.push(tag + "=" + JSON.stringify(clause));
+		});
+		
+		if(this.validateQuery(query)) {
+			console.info(query.join("&"));
+		}
 	}
 }
