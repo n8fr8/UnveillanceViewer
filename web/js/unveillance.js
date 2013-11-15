@@ -109,25 +109,43 @@ function renderJ3M(data) {
 }
 
 function renderJ3MMap(points) {
-	$("#map").css('height', $("#footer").position().top * 0.8);
+	$("#map").css('height', $("#footer").position().top * .93);
 	var cloudmadeApiKey = '23c00ae936704081ab019253c36a55b3';
 	
-	map = L.map('map').setView([0,0], 6);
+	map = L.map('map').setView([0,0], 2);
 	L.tileLayer('http://{s}.tile.cloudmade.com/' + cloudmadeApiKey + '/110483/256/{z}/{x}/{y}.png', {
 		maxZoom: 18,
 		attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>'
 	}).addTo(map);	
 	
+	var myIcon = L.icon({
+	    iconUrl: '/web/images/ic_marker.png',
+	    iconRetinaUrl: '/web/images/ic_marker.png',
+	    iconSize: [36, 36]
+	   
+	})
+	
 	var absorbed = new Array();
 	$.each(points, function(idx, item) {
-		point = [item[1].toFixed(3), item[0].toFixed(3)];
+		
+		point = [item.location[1].toFixed(3), item.location[0].toFixed(3)];
 		if(absorbed.indexOf(point.join()) == -1) {
-			L.marker(point).addTo(map);
+			
+			var marker = L.marker(point);
+			marker.setIcon(myIcon);
+			
+			
+			marker.addTo(map);
+			
+			marker.addEventListener('click',function(e)
+					{
+				location.href='/submission/' + item.id + '/';
+					});
+			
 			absorbed.push(point.join());
 		}
 	});
 	
-	map.setZoom(1);
 }
 
 function renderAuxContent(html) {
