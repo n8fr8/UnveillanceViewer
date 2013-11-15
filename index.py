@@ -234,7 +234,7 @@ class RouteHandler(tornado.web.RequestHandler):
 			if status == 1:
 				auth_layout = "login_ctrl"
 			elif status == 2:
-				auth_layout = "search_ctrl"
+				auth_layout = "logout_ctrl"
 			
 			tmpl = Template(filename="%s/layout/%s.html" % (static_path, layout))
 
