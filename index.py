@@ -155,9 +155,21 @@ class RouteHandler(tornado.web.RequestHandler):
 		self.route = route
 
 	def get(self, route):
+		auth_layout = None
 		q_string = self.request.query
 		
 		status = self.getStatus()
+		if status == 1:
+			auth_layout = Template(filename="%s/layout/authentication/login_ctrl.html" % static_path).render()
+			auth_stopgap = Template(filename="%s/layout/errors/error_not_logged_in.html" % static_path).render()
+			
+			self.finish(main_layout.render(
+				template_content=auth_stopgap,
+				authentication_holder='',
+				authentication_ctrl=auth_layout,
+				data=''
+			))
+			return
 		
 		if route is not None:
 			url = "%s%s" % (uurl, route)
@@ -236,10 +248,7 @@ class RouteHandler(tornado.web.RequestHandler):
 				else:
 					layout = "main"
 
-			auth_layout = None
-			if status == 1:
-				auth_layout = "login_ctrl"
-			elif status == 2:
+			if status == 2:
 				auth_layout = "logout_ctrl"
 			
 			tmpl = Template(filename="%s/layout/%s.html" % (static_path, layout))

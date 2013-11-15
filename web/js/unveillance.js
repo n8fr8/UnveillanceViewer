@@ -138,19 +138,19 @@ function renderJ3MMap(points) {
 function renderAuxContent(html) {
 	$("#aux_popup").empty();
 	$("#aux_popup").html(html);
-	if($("#aux_popup").css('display') != "block") {
-		$("#aux_popup").css('display','block');
+	if($("#aux_popup_holder").css('display') != "block") {
+		$("#aux_popup_holder").css('display','block');
 		translate("#aux_popup");
 	}
 }
 
 function killAuxPopup() {
-	$("#aux_popup").css('display', 'none');
+	$("#aux_popup_holder").css('display', 'none');
 	window.history.back();
 }
 
 (function($) {
-	var app = $.sammy('#aux_popup', function() {
+	var app = $.sammy('#aux_popup_holder', function() {
 		this.get('#login', function(context) {
 			$.ajax({
 				url: "/web/layout/authentication/do_login.html",
