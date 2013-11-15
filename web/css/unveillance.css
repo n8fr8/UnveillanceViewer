@@ -392,3 +392,11 @@ text-align:center;
  width:42px;
 vertical-align:top;
 }
+
+.ic_search_result
+{
+	float: left;
+	margin:6px;
+	padding:6px;
+	background-color:#eee;
+}

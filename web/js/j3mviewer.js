@@ -99,7 +99,16 @@ var J3MViewer = function() {
 			attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>'
 		}).addTo(map);
 		
-		var marker = L.marker([lat,lon]).addTo(map);
+		var myIcon = L.icon({
+		    iconUrl: '/web/images/ic_marker.png',
+		    iconRetinaUrl: '/web/images/ic_marker.png',
+		    iconSize: [36, 36]
+		   
+		});
+		
+		var marker = L.marker([lat,lon]);
+		marker.setIcon(myIcon);
+		marker.addTo(map);
 		
 	}
 	
@@ -107,7 +116,15 @@ var J3MViewer = function() {
 		if (!map) {
 			loadMap(lat, lon)
   		} else {
-			var marker = L.marker([lat,lon]).addTo(map);
+			var marker = L.marker([lat,lon]);
+			var myIcon = L.icon({
+			    iconUrl: '/web/images/ic_marker.png',
+			    iconRetinaUrl: '/web/images/ic_marker.png',
+			    iconSize: [36, 36]
+			   
+			});
+			marker.setIcon(myIcon);
+			marker.addTo(map);
   		}
 	}
 	
@@ -524,11 +541,11 @@ var J3MViewer = function() {
 	
 
 		if(j3m_viewer.sensorData["lightMeterValue"]) {
-			j3m_viewer.addItem("ic_data_light.png","Light Value",j3m_viewer.sensorData["lightMeterValue"][0].value);
+			j3m_viewer.addItem("ic_data_light.png","Light Meter",j3m_viewer.sensorData["lightMeterValue"][0].value);
 		}
 		else
 			{
-			j3m_viewer.addItem("ic_data_light.png","Light Value","?");
+			j3m_viewer.addItem("ic_data_light.png","Light Meter","?");
 			
 			}
 		
@@ -584,14 +601,14 @@ var J3MViewer = function() {
 		j3m_viewer.addBreak();
 
 		j3m_viewer.addMultiChart(
-			"PitchRollAzimuth","Pitch (R), Roll (G) &amp; Azimuth (B)",
+			"PitchRollAzimuth","Pitch, Roll &amp; Azimuth",
 			j3m_viewer.sensorData["pitch"],
 			j3m_viewer.sensorData["roll"],
 			j3m_viewer.sensorData["azimuth"]
 		);
 
 		j3m_viewer.addMultiChart(
-			"Accelerometer","Accelerometer (X (R), Y (G), Z (B))",
+			"Accelerometer","Accelerometer (X,Y,Z)",
 			j3m_viewer.sensorData["acc_x"],
 			j3m_viewer.sensorData["acc_y"],
 			j3m_viewer.sensorData["acc_z"]
@@ -725,7 +742,31 @@ function getBearingFromAzimuth (azimuthInRadians)
 	if (azimuthInDegress < 0.0) {
 	    azimuthInDegress += 360.0;
 	}
-	return azimuthInDegress;
+	
+    var bearing = Math.round(azimuthInDegress);
+    
+    if (bearing >= 0 && bearing < 30)
+    	bearing += "° N";
+    else if (bearing > 30 && bearing < 70)
+    	bearing += "° NE";
+    else if (bearing > 70 && bearing < 120)
+    	bearing += "° E";
+    else if (bearing > 120 && bearing < 160)
+    	bearing += "° SE";
+    else if (bearing > 160 && bearing < 220)
+    	bearing += "° S";
+    else if (bearing > 220 && bearing < 250)
+    	bearing += "° SW";
+    else if (bearing > 250 && bearing < 300)
+    	bearing += "° W";
+    else if (bearing > 300 && bearing < 330)
+    	bearing += "° NW";
+    else if (bearing > 330)
+    	bearing += "° N";
+    
+    
+    return bearing;
+	
 }
 
 function timeConverter(UNIX_timestamp){
