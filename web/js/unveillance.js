@@ -122,7 +122,6 @@ function renderJ3MMap(points) {
 	    iconUrl: '/web/images/ic_marker.png',
 	    iconRetinaUrl: '/web/images/ic_marker.png',
 	    iconSize: [36, 36]
-	   
 	})
 	
 	$.each(points, function(idx, item) {
@@ -134,7 +133,6 @@ function renderJ3MMap(points) {
 			window.location = "/submission/" + item.id + "/";
 		});
 	});
-	
 }
 
 function renderAuxContent(html) {

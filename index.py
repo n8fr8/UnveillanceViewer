@@ -132,6 +132,12 @@ class RouteHandler(tornado.web.RequestHandler):
 		print route
 		print status
 		
+		if status == 0:
+			if route == "submission":
+				extra_tmpls.append(Template(
+					filename="%s/layout/opts/download_options.html" % static_path
+				).render())
+		
 		if status == 2:
 			if route == "submission":
 				extra_tmpls.append(Template(

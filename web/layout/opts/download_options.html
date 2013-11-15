@@ -14,13 +14,23 @@
 				.append(
 					$(document.createElement('a'))
 						.html("Download Media")
-						.attr('class','ic_button')
+						.attr({
+							'class':'ic_button',
+							'href' : window.location.pathname + "media/orig/",
+							'target' : '_blank',
+							'download' : window.location.pathname.split("/")[2] + ".jpg"
+						})
 						.css('margin-right', 6)
 				)
 				.append(
 					$(document.createElement('a'))
 						.html("Download J3M Metadata")
-						.attr('class','ic_button')
+						.attr({
+							'class':'ic_button',
+							'href': window.location.pathname + "j3m/",
+							'target' : '_blank',
+							'download' : window.location.pathname.split("/")[2] + ".j3m"
+						})
 	
 				)
 		);
