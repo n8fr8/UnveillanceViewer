@@ -4,21 +4,18 @@
 
 {{#.}}
 <script>
-	var lon_lat = [{{ data.exif.location }}];
-	points.push(lon_lat);
+	var searchResult = new Object();
+	searchResult.location = [{{ data.exif.location }}];
+	searchResult.id = "{{ _id }}";
+	points.push(searchResult);
 </script>
 {{/.}}
 
 <h2>Recent Submissions</h2>
 <div id="map" class="ic_content_holder"></div>
-<ul class="ic_content_holder" >
-	{{#.}}
-	<li class="ic_as_list">
-		<a href="/submission/{{ _id }}/">{{ _id }}:</a>
-		Admitted on <span class="translatable ic_date">{{ date_admitted }}</span>
-	</li>
-	{{/.}}
-</table>
+
+	
+
 ${ extras }
 <script>	
 	renderJ3MMap(points);
