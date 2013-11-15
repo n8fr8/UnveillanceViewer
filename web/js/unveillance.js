@@ -90,7 +90,7 @@ function renderData(data) {
 	u_user = new User();
 	
 	if(data.result == 200) {
-		console.info(data.data);
+		//console.info(data.data);
 		renderUi(data.data);
 	} else {
 		$.ajax({
@@ -125,25 +125,14 @@ function renderJ3MMap(points) {
 	   
 	})
 	
-	var absorbed = new Array();
 	$.each(points, function(idx, item) {
-		
 		point = [item.location[1].toFixed(3), item.location[0].toFixed(3)];
-		if(absorbed.indexOf(point.join()) == -1) {
-			
-			var marker = L.marker(point);
-			marker.setIcon(myIcon);
-			
-			
-			marker.addTo(map);
-			
-			marker.addEventListener('click',function(e)
-					{
-				location.href='/submission/' + item.id + '/';
-					});
-			
-			absorbed.push(point.join());
-		}
+		var marker = L.marker(point);
+		marker.setIcon(myIcon);
+		marker.addTo(map);
+		marker.addEventListener('click', function(e) {
+			window.location = "/submission/" + item.id + "/";
+		});
 	});
 	
 }

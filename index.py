@@ -286,8 +286,6 @@ class LoginHandler(tornado.web.RequestHandler):
 		if self.getStatus() == 0:
 			self.finish({'ok':False})
 			return
-			
-		print "LOG IN REQUEST"
 		
 		username = None
 		password = None
@@ -300,7 +298,6 @@ class LoginHandler(tornado.web.RequestHandler):
 			elif kv[0] == "password":
 				password = kv[1]
 		
-		print credentials
 		if username is "" or password is "" or username is None or password is None:
 			self.finish({'ok':False})
 			return

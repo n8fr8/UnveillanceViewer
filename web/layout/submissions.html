@@ -4,8 +4,10 @@
 
 {{#.}}
 <script>
-	var lon_lat = [{{ data.exif.location }}];
-	points.push(lon_lat);
+	var searchResult = new Object();
+	searchResult.location = [{{ data.exif.location }}];
+	searchResult.id = "{{ _id }}";
+	points.push(searchResult);
 </script>
 {{/.}}
 
