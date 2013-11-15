@@ -8,30 +8,23 @@
 	</div>
 	
 	<div id="ic_submission_info">
-	
-	<div style="padding:6px">
-	<div style="float:left;padding:3px;margin:12px">
-		<span class="ic_label">Admitted:</span> <span class="translatable ic_date">{{ date_admitted }}</span>
+		<div style="padding:6px">
+			<div style="float:left;padding:3px;margin:12px">
+				<span class="ic_label">Admitted:</span> <span class="translatable ic_date">{{ date_admitted }}</span>
+			</div>
+			<div style="float:left;padding:3px;margin:12px">
+				<span class="ic_label">Type:</span> <span>{{ mime_type }}</span>
+			</div>
+			<div style="float:left;padding:3px;margin:12px">
+				<span class="ic_status_label">Signature Verified?</span>
+				<span class="translatable ic_status_value">{{ j3m_verified }}</span>
+			</div>
+			<div style="float:left;padding:3px;margin:12px">
+				<span class="ic_status_label">Media Verified?</span>
+				<span class="translatable ic_status_value">{{ media_verified }}</span>		
+			</div>
+		</div>
 	</div>
-	<div style="float:left;padding:3px;margin:12px">
-		<span class="ic_label">Type:</span> <span>{{ mime_type }}</span>
-	</div>
-	<div style="float:left;padding:3px;margin:12px">
-			<span class="ic_status_label">Signature Verified?</span>
-			<span class="translatable ic_status_value">{{ j3m_verified }}</span>
-	</div>
-	<div style="float:left;padding:3px;margin:12px">
-			<span class="ic_status_label">Media Verified?</span>
-			<span class="translatable ic_status_value">{{ media_verified }}</span>
-		
-	</div>
-	<div style="float:left;padding:3px;margin:12px">
-	<input type="button" value="Download Media"/>
-	<input type="button" value="Download J3M Metadata" onclick="location.href='/submission/{{ _id }}/j3m/';"/>
-	</div>	
-	<br style="clear:both;"/>
-	</div>
-</div>
 </div>
 ${ extras }
 

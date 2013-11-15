@@ -127,6 +127,24 @@ class RouteHandler(tornado.web.RequestHandler):
 				
 		return True
 	
+	def getExtraTemplatesByStatus(self, status, route, as_search_result=False):
+		extra_tmpls = []
+		print route
+		print status
+		
+		if status == 2:
+			if route == "submission":
+				extra_tmpls.append(Template(
+					filename="%s/layout/opts/download_options.html" % static_path
+				).render())
+			
+			if as_search_result:
+				extra_tmpls.append(Template(
+					filename="%s/layout/opts/save_search.html" % static_path
+				).render())
+		
+		return extra_tmpls
+	
 	def initialize(self, route):
 		self.route = route
 
@@ -204,6 +222,7 @@ class RouteHandler(tornado.web.RequestHandler):
 					return
 				
 				layout = route[0]
+				tmpl_extras.extend(self.getExtraTemplatesByStatus(status, route[0], as_search_result))
 				
 			else:
 				if status == 0:
@@ -216,12 +235,6 @@ class RouteHandler(tornado.web.RequestHandler):
 				auth_layout = "login_ctrl"
 			elif status == 2:
 				auth_layout = "search_ctrl"
-				if as_search_result:
-					tmpl_extras.append(
-						Template(
-							filename="%s/layout/searches/save_search.html" % static_path
-						).render()
-					)
 			
 			tmpl = Template(filename="%s/layout/%s.html" % (static_path, layout))
 
@@ -235,7 +248,7 @@ class RouteHandler(tornado.web.RequestHandler):
 				authentication_ctrl = Template(
 					filename="%s/layout/authentication/admin_ctrl.html" % static_path
 				).render()
-			
+						
 			data = json.loads(r.text.replace(assets_path, ""))
 			self.finish(main_layout.render(
 				template_content=tmpl.render(extras="".join(tmpl_extras)),

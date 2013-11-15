@@ -44,35 +44,6 @@ body {
 	margin-right:10px;
 }
 
-#ic_search {
-	height:200px;
-	width:100%;
-	border:1px solid #000;
-	clear:both;
-	overflow:hidden;
-	display:none;
-}
-
-#ic_search #search_clause_holder {
-	overflow-y:auto;
-	height:120px;
-	margin-left:22%;
-	padding-top:2px;
-}
-
-#ic_search #search_start {
-	width:90%;
-	height:200px;
-	background-color:#b6b6b6;
-}
-
-#ic_search #search_submit {
-	float:right;
-	position:relative;
-	top: -30px;
-	margin-right:44px;
-}
-
 #content {
 	z-index:1;
 	position:relative;
@@ -127,6 +98,19 @@ body {
 	display:none;
 }
 
+#admin_advanced_search_holder {
+	display:none;
+}
+
+#admin_advanced_search_holder #ic_search_clause_holder, #admin_saved_searches_holder {
+	max-height:200px;
+	overflow-y:auto;
+}
+
+.ic_clause_template div {
+	display:inline;
+}
+
 #footer {
 	position:fixed;
 	height:inherit;
@@ -164,6 +148,10 @@ h4, h5 {
 
 p {
 	font-size:0.8em;
+}
+
+#content ol.ic_content_holder {
+	margin: 10px 0 0 30px;
 }
 
 #content .ic_content_holder .ic_as_list {
@@ -212,7 +200,7 @@ a {
 	font-weight:normal;
 }
 
-#content #ic_opts a {
+#content #ic_opts a, #content .ic_opts a {
 	font-size:0.5em;
 	font-weight:normal;
 	color:#000000;
@@ -334,8 +322,12 @@ ul.ic_panel_ul li {
 	margin-bottom:8px;
 }
 
-#aux_popup #admin_saved_searches_holder ul li a div {
+#aux_popup #admin_saved_searches_holder ul li a div, #admin_advanced_search_holder {
 	font-size:0.7em;
+}
+
+#admin_advanced_search_holder {
+	font-family:'lato-regular';
 }
 
 .ic_thumb {

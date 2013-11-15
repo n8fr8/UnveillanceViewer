@@ -1,0 +1,33 @@
+<script>	
+	var downloadOptions = (function() {	
+		$("#ic_submission_info").append(
+			$(document.createElement('div'))
+				.css({
+					'padding' : '3px 0 20px 3px',
+					'margin' : 12,
+					'float': 'left',
+					'font-size' : '1.5em',
+					'text-align' : 'left',
+					'width' : '100%'
+				})
+				.attr('class', 'ic_opts')
+				.append(
+					$(document.createElement('a'))
+						.html("Download Media")
+						.attr('class','ic_button')
+						.css('margin-right', 6)
+				)
+				.append(
+					$(document.createElement('a'))
+						.html("Download J3M Metadata")
+						.attr('class','ic_button')
+	
+				)
+		);
+	});
+	
+	if(onDataLoaded.indexOf("downloadOptions") == -1) {
+		onDataLoaded.push("downloadOptions");
+		downloadOptions();
+	}
+</script>

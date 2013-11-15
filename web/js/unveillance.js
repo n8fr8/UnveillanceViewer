@@ -1,4 +1,5 @@
 var j3m_viewer = null;
+var onDataLoaded = [];
 
 function toggleElement(el) {
 	console.info($(el));
@@ -201,6 +202,8 @@ function killAuxPopup() {
 				window.location = "/submissions/?public_hash=" + $("#ic_lookup_hash").val();
 			}
 		});
+		
+		
 	});
 
 })(jQuery);

@@ -17,11 +17,69 @@ var ICSearch = function() {
 		}
 	});
 	
-	var Clause = function(append) {
+	var Clause = function(root_type) {
 		this.id = "clause_" + (new Date()).getTime();
 		this.render = $(clause_template).clone();
 		
-		$(this.render).attr('id', this.id);		
+		$(this.render).attr('id', this.id);
+		
+		var submission_clause_selectors = [
+			{
+				label: "were created on or between...",
+				tmpl: "by_dateCreated.html"
+			},
+			{
+				label: "were taken near...",
+				tmpl: "by_location.html"
+			},
+			{
+				label: "were taken by...",
+				tmpl: "by_sourceID.html"
+			}
+		];
+		
+		var source_clause_selectors = [
+			{
+				label: "goes by alias...",
+				tmpl: "by_source_alias.html"
+			}
+		];
+		
+		var clause_selector = submission_clause_selectors;
+		if(root_type == "sources") {
+			clause_selector = source_clause_selectors;
+		}
+		
+		var clause_selector_holder = $(this.render).children(".clause_selector")[0];
+		$(clause_selector_holder).append(
+			$(document.createElement('option'))
+				.html("______________________")
+				.val("null")
+		);
+		
+		$.each(clause_selector, function(idx, item) {
+			$(clause_selector_holder).append(
+				$(document.createElement('option'))
+					.html(item.label)
+					.val(item.tmpl)
+			);
+		});
+		$(clause_selector_holder).change(function() {
+			var filter_holder = $(this).parent().children(".clause_filter_holder")[0];
+			$(filter_holder).empty();
+			
+			if($(this).val() != "null") {
+				$.ajax({
+					url: "/web/layout/searches/" + $(this).val(),
+					dataType: "html",
+					success: function(html) {
+						$(clause_selector_holder).remove();
+						$(filter_holder).html(html);
+					}
+				});				
+			}
+		});
+		
 		$("#ic_search_clause_holder").append(this.render);
 	}
 	
@@ -29,7 +87,6 @@ var ICSearch = function() {
 	this.root_type;
 	
 	$("#search_root_type").change(function() {
-		console.info("changing root type: " + $(this).val());
 		current_search.setRootType($(this).val());
 	});
 	
@@ -43,18 +100,23 @@ var ICSearch = function() {
 	this.setRootType = function(root_type) {
 		this.root_type = root_type;
 		$.each(this.clauses, function(idx, clause) {
-			this.removeClause(clause.id);
+			$("#" + clause.id).remove();
 		});
-		// if clauses are compatible with root type...
+		$(this.clauses).empty();
+		$("#ic_add_clause").addClass("unused");
 	}
 	
 	this.addClause = function() {
-		this.clauses.push(new Clause());
+		this.clauses.push(new Clause(this.root_type));
 	}
 	
-	this.removeClause = function(clause_element) {
-		var clause_id = $($($(clause_element).parent()).parent()).attr('id');
+	this.removeClause = function(clause_element, clause_id) {
+		if((clause_id == undefined || clause_id == null) && clause_element != undefined) {
+			clause_id = $($($(clause_element).parent()).parent()).attr('id');
+		}
+		
 		var idx = this.getClauseIndex(clause_id);
+		
 		if(idx >= 0) {
 			this.clauses.splice(idx, 1);
 			$("#" + clause_id).remove();
@@ -63,7 +125,6 @@ var ICSearch = function() {
 		if(this.clauses.length == 0) {
 			$("#ic_add_clause").addClass("unused");
 		}
-		
 	}
 	
 	this.getClauseIndex = function(clause_id) {
