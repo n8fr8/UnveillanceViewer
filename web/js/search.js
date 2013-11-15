@@ -27,17 +27,14 @@ var ICSearch = function() {
 			{
 				label: "were created on or between...",
 				tmpl: "by_dateCreated.html",
-				root: "dateCreated"
 			},
 			{
 				label: "were taken near...",
 				tmpl: "by_location.html",
-				root: "location"
 			},
 			{
 				label: "were taken by...",
 				tmpl: "by_sourceID.html",
-				root: "sourceID"
 			}
 		];
 		
@@ -45,7 +42,6 @@ var ICSearch = function() {
 			{
 				label: "goes by alias...",
 				tmpl: "by_source_alias.html",
-				root: "alias"
 			}
 		];
 		
@@ -106,7 +102,7 @@ var ICSearch = function() {
 		$.each(this.clauses, function(idx, clause) {
 			$("#" + clause.id).remove();
 		});
-		$(this.clauses).empty();
+		this.clauses = [];
 		$("#ic_add_clause").addClass("unused");
 	}
 	
@@ -171,7 +167,12 @@ var ICSearch = function() {
 		});
 		
 		if(this.validateQuery(query)) {
-			console.info(query.join("&"));
+			var q_string = "/submissions/";
+			if(this.root_type == "sources") {
+				q_string = "/sources/";
+			}
+			
+			window.location = q_string + "?" + query.join("&");
 		}
 	}
 }

@@ -55,6 +55,8 @@ var User = function() {
 			data: JSON.stringify(data),
 			dataType: "json",
 			success: function(json) {
+				u_user = null;
+				localStorage.clear();
 				window.history.back();
 				window.location.reload();
 			}
@@ -63,29 +65,35 @@ var User = function() {
 };
 
 function doAdmin() {
-	$.ajax({
-		url: "/web/layout/static/admin.html",
-		dataType: "html",
-		success: function(html) {
-			renderAuxContent(Mustache.to_html(html, u_user.asJson()));
-		}
-	});
+	if(u_user != null && u_user != undefined) {
+		$.ajax({
+			url: "/web/layout/static/admin.html",
+			dataType: "html",
+			success: function(html) {
+				renderAuxContent(Mustache.to_html(html, u_user.asJson()));
+			}
+		});
+	}
 }
 
 function doLogout() {
-	$.ajax({
-		url : "/logout/",
-		type: "POST",
-		dataType: "json",
-		success: function(json) {
-			if(json.ok) {
-				window.history.back();
-				window.location.reload();
-			} else {
-				$("#ic_bad_logout_holder").css('display','block');
+	if(u_user != null && u_user != undefined) {
+		$.ajax({
+			url : "/logout/",
+			type: "POST",
+			dataType: "json",
+			success: function(json) {
+				if(json.ok) {
+					localStorage.clear();
+					u_user = null;
+					window.history.back();
+					window.location.reload();
+				} else {
+					$("#ic_bad_logout_holder").css('display','block');
+				}
 			}
-		}
-	});
+		});
+	}
 }
 
 function doLogin() {
@@ -99,7 +107,6 @@ function doLogin() {
 		},
 		success: function(json) {
 			if(json.ok) {
-				// save to local storage
 				localStorage.setItem('user', JSON.stringify(json.user));
 				window.history.back();
 				window.location.reload();

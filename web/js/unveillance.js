@@ -49,7 +49,7 @@ function translate(el) {
 			);
 		}
 		
-		if($(item).hasClass('ic_user_alias') && u_user != undefined) {
+		if($(item).hasClass('ic_user_alias') && (u_user != undefined && u_user != null)) {
 			$(item).html(u_user.username);
 		}
 		
