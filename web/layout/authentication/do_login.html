@@ -1,3 +1,26 @@
+<script>
+	function doLogin() {
+		$.ajax({
+			url : "/login/",
+			dataType: "json",
+			type: "POST",
+			data: {
+				username: $("#ic_username").val(),
+				password: $("#ic_password").val()
+			},
+			success: function(json) {
+				if(json.ok) {
+					localStorage.setItem('user', JSON.stringify(json.user));
+					window.history.back();
+					window.location.reload();
+				} else {
+					$("#ic_bad_login_holder").css('display','block');
+				}
+			}
+		});
+	}
+</script>
+
 <h3>Login <a class="ic_exit" rel="aux_popup">[x]</a></h3>
 <p>Username: <input type="text" id="ic_username" /></p>
 <p>Password: <input type="password" id="ic_password" /></p>

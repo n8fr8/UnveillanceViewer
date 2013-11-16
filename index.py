@@ -7,30 +7,36 @@ import tornado.web
 import tornado.httpserver
 from mako.template import Template
 
-from conf import server_port, use_ssl, cert_file, key_file, auth_root, uurl, assets_path, cookie_tag, admin_cookie_tag, cookie_secret, no_access_cookie
+from conf import server_port, use_ssl, cert_file, key_file, auth_root, user_root, uurl, assets_path, cookie_tag, admin_cookie_tag, cookie_secret, no_access_cookie
 
 def terminationHandler(signal, frame):
 	sys.exit(0)
 
-def createNewUser(username, password):
+def createNewUser(username, password, as_admin=False):
 	try:
 		credentials = copy.deepcopy(credential_pack)
 		credentials['username'] = username
+		if as_admin:
+			credentials['admin'] = True
+			print "Creating %s as admin!" % username
+		
+		print credentials
 		"%s.txt" % hashlib.sha1(username + file_salt).hexdigest()
 		
 		try:
-			f = open(os.path.join(auth_root, "%s.txt" % hashlib.sha1(username + file_salt).hexdigest()), 'rb')
+			f = open(os.path.join(user_root, "%s.txt" % hashlib.sha1(username + file_salt).hexdigest()), 'rb')
 			f.close()
 			return False
 		except IOError as e:
 			print "THIS IS A GOOD ERROR! %s" % e
 			pass
 		
-		f = open(os.path.join(auth_root, "%s.txt" % hashlib.sha1(username + file_salt).hexdigest()), 'wb+')
+		f = open(os.path.join(user_root, "%s.txt" % hashlib.sha1(username + file_salt).hexdigest()), 'wb+')
 		f.write(encrypt(credentials, password, p_salt=password_salt, iv=private_iv))
 		f.close()
 		return True
 	except:
+		print "but something went wrong?"
 		return False
 
 def encrypt(plaintext, password, iv=None, p_salt=None):
@@ -117,6 +123,14 @@ def getStatus(req):
 
 	return 1
 
+def checkForAdminParty():
+	for root_, dir_, files in os.walk(user_root):
+		for f in files:
+			print "not admin party!"
+			return False
+	
+	return True
+
 class PingHandler(tornado.web.RequestHandler):
 	@tornado.web.asynchronous
 	def get(self):
@@ -180,7 +194,15 @@ class RouteHandler(tornado.web.RequestHandler):
 		if status == 1:
 			auth_layout = Template(filename="%s/layout/authentication/login_ctrl.html" % static_path).render()
 			
-			auth_stopgap = Template(filename="%s/layout/errors/error_not_logged_in.html" % static_path).render()
+			# first, let's see if you have any user files
+			if checkForAdminParty():
+				auth_stopgap = Template(
+					filename="%s/layout/authentication/admin_party.html" % static_path
+				).render()
+			else:
+				auth_stopgap = Template(
+					filename="%s/layout/errors/error_not_logged_in.html" % static_path
+				).render()
 			
 			extra_scripts = Template(
 				filename="%s/layout/authentication/disable_user.html" % static_path
@@ -345,7 +367,7 @@ class LoginHandler(tornado.web.RequestHandler):
 		
 		# if this file exists,
 		try:
-			f = open(os.path.join(auth_root, auth), 'rb')
+			f = open(os.path.join(user_root, auth), 'rb')
 			ciphertext = f.read()
 			f.close()
 			
@@ -389,7 +411,7 @@ class LogoutHandler(tornado.web.RequestHandler):
 				
 				auth = "%s.txt" % hashlib.sha1(credentials['user']['username'] + file_salt).hexdigest()
 				
-				f = open(os.path.join(auth_root, auth), 'rb')
+				f = open(os.path.join(user_root, auth), 'rb')
 				ciphertext = f.read()
 				f.close()
 			
@@ -401,7 +423,7 @@ class LogoutHandler(tornado.web.RequestHandler):
 					new_data = copy.deepcopy(plaintext)
 					new_data['saved_searches'] = credentials['user']['saved_searches']
 					
-					f = open(os.path.join(auth_root, auth), 'wb+')
+					f = open(os.path.join(user_root, auth), 'wb+')
 					f.write(encrypt(
 						new_data, 
 						credentials['password'],
@@ -425,10 +447,12 @@ class LogoutHandler(tornado.web.RequestHandler):
 		self.finish({'ok':True})
 
 class UserHandler(tornado.web.RequestHandler):
-	def post(self):
-		if getStatus(self) != 3:
-			self.finish({'ok':False})
-			return
+	def post(self):		
+		status = getStatus(self)
+		if status != 3:
+			if not checkForAdminParty() and status == 1:
+				self.finish({'ok':False})
+				return
 		
 		username = None
 		password = None
@@ -450,7 +474,7 @@ class UserHandler(tornado.web.RequestHandler):
 			self.finish({'ok':False})
 			return
 		
-		if createNewUser(username, password):
+		if createNewUser(username, password, as_admin=checkForAdminParty()):
 			self.finish({'ok' : True})
 			return
 		
@@ -479,12 +503,12 @@ credential_pack = {
 }
 
 routes = [
-	(r"/([^web/|login/|logout/|ping/|leaflet/][a-zA-Z0-9/]*/$)?", RouteHandler, dict(route=None)),
+	(r"/([^web/|login/|logout/|ping/|leaflet/|upanel/][a-zA-Z0-9/]*/$)?", RouteHandler, dict(route=None)),
 	(r"/web/([a-zA-Z0-9\-/\._]+)", tornado.web.StaticFileHandler, {"path" : static_path }),
 	(r"/leaflet/(.*)", LeafletHandler, dict(route=None)),
 	(r"/login/", LoginHandler),
 	(r"/logout/", LogoutHandler),
-	(r"/user/", UserHandler),
+	(r"/upanel/", UserHandler),
 	(r"/ping/", PingHandler)
 ]
 

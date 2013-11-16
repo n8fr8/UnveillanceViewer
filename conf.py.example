@@ -1,0 +1,12 @@
+uurl = "http://localhost:8080/"
+use_ssl = False
+auth_root = "auth/"
+user_root = "/another/folder/where/you/store/user/data/"	# MUST BE EMPTY!
+cert_file = "/path/to/your_ssl_cert_if_you_use_ssl.crt"
+key_file = "/path/to/your_ssl_pem_if_you_use_ssl.pem"
+assets_path = ""
+server_port = 8888
+cookie_tag = "tag_for_basic_users"
+cookie_secret = "make it a good one!"
+no_access_cookie = "tag_for_public_users"
+admin_cookie_tag = "tag_for_super-authenticated_admin_users"

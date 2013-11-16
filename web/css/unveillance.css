@@ -98,7 +98,7 @@ body {
 	padding-bottom:10px;
 }
 
-#aux_popup div, #aux_popup ul, #aux_popup p {
+#aux_popup div, #aux_popup ul, #aux_popup p, .ic_admin_holder div {
 	margin:10px;
 }
 
@@ -115,6 +115,10 @@ body {
 #admin_advanced_search_holder #ic_search_clause_holder, #admin_saved_searches_holder {
 	max-height:275px;
 	overflow-y:auto;
+}
+
+#content .ic_admin_holder {
+	margin:10px;
 }
 
 .ic_clause_template div {
@@ -190,7 +194,7 @@ a {
 	font-family:'lato-hairline';
 }
 
-#footer a, #aux_popup #admin_saved_searches_holder ul li a {
+#footer a, #aux_popup #admin_saved_searches_holder ul li a, .ic_admin_holder a {
 	color:#292929;
 }
 
@@ -270,6 +274,11 @@ input, select {
     border: 1px solid #A0C2D3;
 }
 
+#content .ic_admin_holder a {
+	color:#292929;
+	font-weight:normal;
+}
+
 .unused {
 	background-color:#999;
 	color:#ccc;
@@ -342,7 +351,7 @@ ul.ic_panel_ul li {
 	margin-bottom:8px;
 }
 
-#aux_popup #admin_saved_searches_holder ul li a div, #admin_advanced_search_holder, #aux_popup #add_new_user {
+#aux_popup #admin_saved_searches_holder ul li a div, #admin_advanced_search_holder, #aux_popup #add_new_user, .ic_admin_holder {
 	font-size:0.7em;
 }
 

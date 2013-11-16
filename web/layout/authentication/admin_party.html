@@ -1,0 +1,22 @@
+<script type="text/javascript" src="/web/js/user_admin.js"></script>
+<script>
+	var successCallback = function() {
+		window.location.reload();
+	}
+</script>
+<h2>Welcome!</h2>
+<h3>There are no administrators yet.  Please set up your account:</h3>
+<div class="ic_content_holder ic_admin_holder">
+	<div id="add_new_user">
+		<p>Usernames must be at least 4 alphanumeric characters and must not contain spaces.</p>
+		<p>Passwords must be at least 6 characters.</p>
+		<p>Username: <input id="ic_username" type="text" /></p>
+		<p>Password: <input id="ic_password" type="password" /></p>
+		<p>Confirm password: <input id="ic_password_check" type="password" /></p>
+		<a class="ic_button ic_note_bene" onclick="addNewUser(successCallback);">Submit</a>
+	</div>
+	<div id="ic_bad_user_holder" class="ic_error" style="display:none;">Sorry. This username is invalid.  Please try again.</div>
+	<div id="ic_bad_password_holder" class="ic_error" style="display:none;">Sorry. Your passwords do not match.  Please try again.</div>
+	<div id="ic_short_password_holder" class="ic_error" style="display:none;">Sorry. Your password is too short.  Please try again.</div>
+	<div id="ic_user_success_holder" class="ic_note_bene" style="display:none;">Success!  Created user <span id="new_user_name"></span>.</div>
+</div>

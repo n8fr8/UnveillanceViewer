@@ -1,3 +1,25 @@
+<script>
+	function doLogout() {
+		if(u_user != null && u_user != undefined) {
+			$.ajax({
+				url : "/logout/",
+				type: "POST",
+				dataType: "json",
+				success: function(json) {
+					if(json.ok) {
+						localStorage.clear();
+						u_user = null;
+						window.history.back();
+						window.location.reload();
+					} else {
+						$("#ic_bad_logout_holder").css('display','block');
+					}
+				}
+			});
+		}
+	}
+</script>
+
 <h3>Logout <a class="ic_exit" rel="aux_popup">[x]</a></h3>
 <p>
 	<a class="ic_button" onclick="toggleElement('#ic_password_holder');">Save my data?</a>  Or <a class="ic_button" onclick="doLogout();">just log out?</a>
