@@ -1,4 +1,47 @@
 <span>were taken on or between</span>
-<input type="text" name="dateCreated_lower" />
-<input type="text" name="dateCreated_upper" />
-<input type="hidden" name="tag" value="dateCreated" />
+<div class="ic_timepicker">
+	<input type="text" name="dateCreated_lower" id="dateCreated_lower" />
+	<div id="timepicker_a" class="tp" style="display:none;">
+		<input type="text" size="3" name="HH" rel="HH" /> : <input type="text" size="3" name="MM" rel="MM" /> 
+	</div>
+	<div id="datepicker_a" class="dp"></div>
+</div>
+<span> and </span>
+<div class="ic_timepicker">
+	<input type="text" name="dateCreated_upper" id="dateCreated_upper" />
+	<div id="timepicker_b" class="tp" style="display:none;">
+		<input type="text" size="3" name="HH" rel="HH" /> : <input type="text" size="3" name="MM" rel="MM" /> 
+	</div>
+	<div id="datepicker_b" class="dp"></div>
+</div>
+
+<input type="hidden" name="tag" value="capturedOn" />
+
+<script>
+	$("#dateCreated_lower").click(function() {
+		$("#datepicker_a").datepicker({
+			onSelect: function(date, ctx) {
+				var HH = $("#timepicker_a input[name='HH']").val();
+				var MM = $("#timepicker_a input[name='MM']").val();
+				$("#dateCreated_lower").val(date + " " + HH + ":" + MM);
+				$("#datepicker_a").datepicker('destroy');
+				toggleElement("#timepicker_a");
+			}
+		});
+		toggleElement("#timepicker_a");
+	});
+
+	$("#dateCreated_upper").click(function() {
+		$("#datepicker_b").datepicker({
+			onSelect: function(date, ctx) {
+				var HH = $("#timepicker_b input[name='HH']").val();
+				var MM = $("#timepicker_b input[name='MM']").val();
+				$("#dateCreated_upper").val(date + " " + HH + ":" + MM);
+				$("#datepicker_b").datepicker('destroy');
+				toggleElement("#timepicker_b");
+			}
+		});
+		toggleElement("#timepicker_b");
+	});
+
+</script>

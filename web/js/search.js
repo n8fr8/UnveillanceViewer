@@ -153,8 +153,51 @@ var ICSearch = function() {
 		return true;
 	}
 	
+	this.massageInput = function(clause_obj) {
+		for(key in clause_obj) {
+			var val = clause_obj[key];
+			switch(key) {
+			case "dateCreated_lower":
+				clause_obj.date = moment(val, "MM/DD/YYYY HH:mm").unix() * 1000;
+				clause_obj.lower = 0;
+				delete clause_obj[key];
+				break;
+			case "dateCreated_upper":
+				if(val == "") {
+					val = 0;
+				} else {
+					var upper = moment(val, "MM/DD/YYYY HH:mm").unix() * 1000;
+					val = Math.abs(clause_obj.date - upper);
+				}
+				
+				clause_obj.upper = val;
+				delete clause_obj[key];
+				break;
+			case "HH":
+				delete clause_obj[key];
+				break;
+			case "MM":
+				delete clause_obj[key];
+				break;
+			case "radius":
+				clause_obj[key] = Number(val);
+				break;
+			case "latitude":
+				clause_obj[key] = Number(val);
+				break;
+			case "longitude":
+				clause_obj[key] = Number(val);
+				break;
+			}
+			
+			
+		}
+		return clause_obj;
+	}
+	
 	this.submit = function() {
 		var query = [];
+		var ctx = this;
 		
 		$.each(this.clauses, function(idx, item) {
 			var clause = {}
@@ -163,7 +206,7 @@ var ICSearch = function() {
 			});
 			
 			var tag = $($(item.render).find("input[type=hidden]")[0]).val();
-			query.push(tag + "=" + JSON.stringify(clause));
+			query.push(tag + "=" + JSON.stringify(ctx.massageInput(clause)));
 		});
 		
 		if(this.validateQuery(query)) {
@@ -172,6 +215,7 @@ var ICSearch = function() {
 				q_string = "/sources/";
 			}
 			
+			console.info(q_string + "?" + query.join("&"));
 			window.location = q_string + "?" + query.join("&");
 		}
 	}

@@ -113,7 +113,7 @@ body {
 }
 
 #admin_advanced_search_holder #ic_search_clause_holder, #admin_saved_searches_holder {
-	max-height:200px;
+	max-height:275px;
 	overflow-y:auto;
 }
 
@@ -348,6 +348,20 @@ ul.ic_panel_ul li {
 
 #admin_advanced_search_holder, #aux_popup #add_new_user {
 	font-family:'lato-regular';
+}
+
+#aux_popup .ic_timepicker {
+	position:relative;
+	display:inline-table;
+	margin:0;
+}
+
+#aux_popup .ic_timepicker .tp {
+	display:table-cell;
+}
+
+#aux_popup .ic_timepicker .dp {
+	display:table-row;
 }
 
 .ic_thumb {

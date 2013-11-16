@@ -187,6 +187,7 @@ function killAuxPopup() {
 				dataType: "html",
 				success: function(html) {
 					renderAuxContent(Mustache.to_html(html, u_user.asJson()));
+					$("#aux_popup").css('width', '75%');
 				}
 			});
 		});
@@ -211,6 +212,10 @@ function killAuxPopup() {
 		app.run();
 		
 		$("#aux_popup").on('click', '.ic_exit', killAuxPopup);
+		$(".ic_clearable").on('click', function() {
+			//$(this).val($(this).attr('rel'))
+			console.info($(this));
+		});
 		
 		$("#ic_lookup_hash").keypress(function(evt) {
 			if(evt.which == 13) {
