@@ -18,3 +18,12 @@ install pycrypto:
 	cd packages/pyCrypto
 	sudo python setup.py build
 	sudo python setup.py install
+
+Modify conf.py.example to suit your needs, and save it as:
+
+	conf.py
+
+To run:
+	
+	python index.py
+
