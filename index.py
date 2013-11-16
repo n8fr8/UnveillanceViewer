@@ -135,7 +135,7 @@ class RouteHandler(tornado.web.RequestHandler):
 		if q_string == "":
 			return True
 			
-		allowed_queries = ["public_hash", "get_all"]
+		allowed_queries = ["public_hash", "get_all", "capturedOn"]
 		
 		for kvp in q_string[1:].split("&"):
 			key_val = kvp.split("=")
@@ -242,6 +242,7 @@ class RouteHandler(tornado.web.RequestHandler):
 			))
 			return
 		
+		extra_scripts = []
 		tmpl_extras = []
 		if format:
 			self.write(r.text.replace(assets_path, ""))
@@ -264,11 +265,17 @@ class RouteHandler(tornado.web.RequestHandler):
 			else:
 				if status == 0:
 					layout = "main_public"
+					extra_scripts.append(Template(
+						filename="%s/layout/authentication/disable_user.html" % static_path
+					).render())
 				else:
 					layout = "main"
 
 			if status == 2 or status == 3:
 				auth_layout = "logout_ctrl"
+				extra_scripts.append(Template(
+					filename="%s/layout/authentication/enable_user.html" % static_path
+				).render())
 			
 			tmpl = Template(filename="%s/layout/%s.html" % (static_path, layout))
 
@@ -283,17 +290,16 @@ class RouteHandler(tornado.web.RequestHandler):
 					filename="%s/layout/authentication/admin_ctrl.html" % static_path
 				).render()
 
-			search_ctrl = ''
-			if status == 2 or status == 3:
-				search_ctrl = Template(
-					filename="%s/layout/searches/search_ctrl.html" % static_path
-				).render()
+			search_ctrl = Template(
+				filename="%s/layout/searches/search_ctrl.html" % static_path
+			).render()
 						
 			data = json.loads(r.text.replace(assets_path, ""))
 			self.finish(main_layout.render(
 				template_content=tmpl.render(extras="".join(tmpl_extras)),
 				authentication_holder=authentication_holder,
 				search_ctrl=search_ctrl,
+				extra_scripts="".join(extra_scripts),
 				authentication_ctrl=authentication_ctrl,
 				data=json.dumps(data)
 			))

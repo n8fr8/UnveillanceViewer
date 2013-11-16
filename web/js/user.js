@@ -1,4 +1,3 @@
-var u_user = null;
 var User = function() {
 	var user = JSON.parse(localStorage.getItem('user'));
 	if(user == null) {

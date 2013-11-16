@@ -1,3 +1,4 @@
+var u_user = null;
 var j3m_viewer = null;
 var onDataLoaded = [];
 
@@ -88,7 +89,6 @@ function renderUi(data) {
 
 function renderData(data) {
 	u_user = new User();
-	
 	if(data.result == 200) {
 		//console.info(data.data);
 		renderUi(data.data);
@@ -146,6 +146,7 @@ function renderAuxContent(html) {
 
 function killAuxPopup() {
 	$("#aux_popup_holder").css('display', 'none');
+	$("#aux_popup").css('width', 'auto');
 	window.history.back();
 }
 
@@ -186,7 +187,11 @@ function killAuxPopup() {
 				url: "/web/layout/static/search.html",
 				dataType: "html",
 				success: function(html) {
-					renderAuxContent(Mustache.to_html(html, u_user.asJson()));
+					if(u_user == undefined || u_user == null) {
+						renderAuxContent(Mustache.to_html(html, {saved_searches : []}));
+					} else {
+						renderAuxContent(Mustache.to_html(html, u_user.asJson()));
+					}
 					$("#aux_popup").css('width', '75%');
 				}
 			});

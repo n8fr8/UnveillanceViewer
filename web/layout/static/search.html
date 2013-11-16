@@ -17,7 +17,7 @@
 			<a class="ic_button ic_note_bene" onclick="current_search.submit();">Go</a>
 		</div>
 	</li>
-	<li>
+	<li style="display:none;" id="saved_searches_li">
 		<a class="ic_button ic_panel_header" onclick="toggleElement('#admin_saved_searches_holder');">My Saved Searches</a>
 		<div id="admin_saved_searches_holder">
 			<ul>
@@ -28,3 +28,9 @@
 		</div>
 	</li>
 </ul>
+
+<script>
+	if(u_user.saved_searches == undefined || u_user.saved_searches.length == 0) {
+		$("#saved_searches_li").remove();
+	}
+</script>
