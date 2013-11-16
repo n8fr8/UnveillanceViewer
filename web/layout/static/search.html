@@ -32,5 +32,7 @@
 <script>
 	if(u_user.saved_searches == undefined || u_user.saved_searches.length == 0) {
 		$("#saved_searches_li").remove();
+	} else {
+		$("#saved_searches_li").css('display','block');
 	}
 </script>

@@ -159,7 +159,6 @@ var ICSearch = function() {
 			switch(key) {
 			case "dateCreated_lower":
 				clause_obj.date = moment(val, "MM/DD/YYYY HH:mm").unix() * 1000;
-				clause_obj.lower = 0;
 				delete clause_obj[key];
 				break;
 			case "dateCreated_upper":

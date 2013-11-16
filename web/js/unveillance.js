@@ -58,7 +58,6 @@ function translate(el) {
 			var term_holder = $(document.createElement('div'));
 			var whole_term = $(item).html().split("?")[1].split("&");
 			$.each(whole_term, function(idx, term) {
-				console.info(term);
 				var kvp = term.split("=");
 				term_holder.append(
 					$(document.createElement('span')).html(kvp[0] + ": " + kvp[1])
