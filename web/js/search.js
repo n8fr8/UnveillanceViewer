@@ -154,6 +154,7 @@ var ICSearch = function() {
 	}
 	
 	this.massageInput = function(clause_obj) {
+		console.info(clause_obj);
 		for(key in clause_obj) {
 			var val = clause_obj[key];
 			switch(key) {
@@ -187,6 +188,9 @@ var ICSearch = function() {
 			case "longitude":
 				clause_obj[key] = Number(val);
 				break;
+			case "sourceID":
+				clause_obj = val;
+				break;
 			}
 			
 			
@@ -198,6 +202,10 @@ var ICSearch = function() {
 		var query = [];
 		var ctx = this;
 		
+		if(this.root_type != "any") {
+			query.push("mime_type=\"" + this.root_type + "\"");
+		}
+		
 		$.each(this.clauses, function(idx, item) {
 			var clause = {}
 			$.each($(item.render).find("input[type=text]"), function(idx_, item_) {
@@ -205,7 +213,11 @@ var ICSearch = function() {
 			});
 			
 			var tag = $($(item.render).find("input[type=hidden]")[0]).val();
-			query.push(tag + "=" + JSON.stringify(ctx.massageInput(clause)));
+			val = ctx.massageInput(clause);
+			if(typeof val == "object") {
+				val = JSON.stringify(val);
+			}
+			query.push(tag + "=" + val);
 		});
 		
 		if(this.validateQuery(query)) {
@@ -214,7 +226,6 @@ var ICSearch = function() {
 				q_string = "/sources/";
 			}
 			
-			console.info(q_string + "?" + query.join("&"));
 			window.location = q_string + "?" + query.join("&");
 		}
 	}

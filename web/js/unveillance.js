@@ -103,6 +103,7 @@ function renderData(data) {
 }
 
 function renderJ3M(data) {
+	console.info(data);
 	j3m_viewer = new J3MViewer();
 	j3m_viewer.parse(data);
 }
@@ -145,7 +146,10 @@ function renderAuxContent(html) {
 
 function killAuxPopup() {
 	$("#aux_popup_holder").css('display', 'none');
-	$("#aux_popup").css('width', 'auto');
+	$("#aux_popup").css({
+		'width': 'auto',
+		'margin-top' : '25%'
+	});
 	window.history.back();
 }
 
@@ -191,7 +195,10 @@ function killAuxPopup() {
 					} else {
 						renderAuxContent(Mustache.to_html(html, u_user.asJson()));
 					}
-					$("#aux_popup").css('width', '75%');
+					$("#aux_popup").css({
+						'width': '75%',
+						'margin-top': '10%'
+					});
 				}
 			});
 		});

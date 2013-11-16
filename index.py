@@ -266,7 +266,10 @@ class RouteHandler(tornado.web.RequestHandler):
 			self.finish(main_layout.render(
 				template_content=error_tmpl.render(),
 				data={},
-				authentication_holder=''
+				authentication_holder='',
+				search_ctrl='',
+				extra_scripts='',
+				authentication_ctrl=''
 			))
 			return
 		
