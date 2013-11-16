@@ -342,11 +342,11 @@ ul.ic_panel_ul li {
 	margin-bottom:8px;
 }
 
-#aux_popup #admin_saved_searches_holder ul li a div, #admin_advanced_search_holder {
+#aux_popup #admin_saved_searches_holder ul li a div, #admin_advanced_search_holder, #aux_popup #add_new_user {
 	font-size:0.7em;
 }
 
-#admin_advanced_search_holder {
+#admin_advanced_search_holder, #aux_popup #add_new_user {
 	font-family:'lato-regular';
 }
 

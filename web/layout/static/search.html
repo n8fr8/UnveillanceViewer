@@ -1,0 +1,30 @@
+<h3><span>Search</span> <a class="ic_exit" rel="aux_popup">[x]</a></h3>
+<ul class="ic_panel_ul">
+	<li>
+		<a class="ic_button ic_panel_header" onclick="initSearch();">Advanced Search</a>
+		<div id="admin_advanced_search_holder">
+			<div id="ic_search_root">
+				<span>Get</span>
+				<select id="search_root_type">
+					<option value="any">any media</option>
+					<option value="image/jpeg">images</option>
+					<option value="video/x-matroska">video</option>
+					<option value="sources">submitter</option>
+				</select>
+				<span id="ic_add_clause" class="ic_button unused" onclick="current_search.addClause();setAsUsed(this);">that...</span>
+			</div>
+			<div id="ic_search_clause_holder"></div>
+			<a class="ic_button ic_note_bene" onclick="current_search.submit();">Go</a>
+		</div>
+	</li>
+	<li>
+		<a class="ic_button ic_panel_header" onclick="toggleElement('#admin_saved_searches_holder');">My Saved Searches</a>
+		<div id="admin_saved_searches_holder">
+			<ul>
+				{{# saved_searches }}
+				<li><a href="{{ . }}" class="translatable ic_search_term">{{ . }}</a></li>
+				{{/ saved_searches}}
+			</ul>
+		</div>
+	</li>
+</ul>

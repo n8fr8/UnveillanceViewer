@@ -181,6 +181,16 @@ function killAuxPopup() {
 			});
 		});
 		
+		this.get('#search', function(context) {
+			$.ajax({
+				url: "/web/layout/static/search.html",
+				dataType: "html",
+				success: function(html) {
+					renderAuxContent(Mustache.to_html(html, u_user.asJson()));
+				}
+			});
+		});
+		
 		this.get('#help', function(context) {
 			$.ajax({
 				url: "/web/layout/static/help.html",

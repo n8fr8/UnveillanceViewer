@@ -7,18 +7,31 @@ import tornado.web
 import tornado.httpserver
 from mako.template import Template
 
-from conf import server_port, use_ssl, cert_file, key_file, auth_root, uurl, assets_path, cookie_tag, cookie_secret, no_access_cookie
+from conf import server_port, use_ssl, cert_file, key_file, auth_root, uurl, assets_path, cookie_tag, admin_cookie_tag, cookie_secret, no_access_cookie
 
 def terminationHandler(signal, frame):
 	sys.exit(0)
 
 def createNewUser(username, password):
-	credentials = copy.deepcopy(credential_pack)
-	credentials['username'] = username
-	"%s.txt" % hashlib.sha1(username + file_salt).hexdigest()
-	f = open(os.path.join(auth_root, "%s.txt" % hashlib.sha1(username + file_salt).hexdigest()), 'wb+')
-	f.write(encrypt(credentials, password, p_salt=password_salt, iv=private_iv))
-	f.close()
+	try:
+		credentials = copy.deepcopy(credential_pack)
+		credentials['username'] = username
+		"%s.txt" % hashlib.sha1(username + file_salt).hexdigest()
+		
+		try:
+			f = open(os.path.join(auth_root, "%s.txt" % hashlib.sha1(username + file_salt).hexdigest()), 'rb')
+			f.close()
+			return False
+		except IOError as e:
+			print "THIS IS A GOOD ERROR! %s" % e
+			pass
+		
+		f = open(os.path.join(auth_root, "%s.txt" % hashlib.sha1(username + file_salt).hexdigest()), 'wb+')
+		f.write(encrypt(credentials, password, p_salt=password_salt, iv=private_iv))
+		f.close()
+		return True
+	except:
+		return False
 
 def encrypt(plaintext, password, iv=None, p_salt=None):
 	if p_salt is not None:
@@ -85,6 +98,25 @@ def decrypt(ciphertext, password, iv=None, p_salt=None):
 		
 	return None	
 
+def getStatus(req):
+	# if you have a NO_ACCESS cookie, well, that's too bad
+	try:
+		for cookie in req.request.cookies:
+			if cookie == no_access_cookie:
+				return 0
+	except KeyError as e:
+		pass
+
+	access = req.get_secure_cookie(cookie_tag)
+	if access is not None:
+		admin = req.get_secure_cookie(admin_cookie_tag)
+		if admin is not None:
+			return 3
+			
+		return 2
+
+	return 1
+
 class PingHandler(tornado.web.RequestHandler):
 	@tornado.web.asynchronous
 	def get(self):
@@ -99,21 +131,6 @@ class PingHandler(tornado.web.RequestHandler):
 
 class RouteHandler(tornado.web.RequestHandler):
 	@tornado.web.asynchronous
-	def getStatus(self):
-		# if you have a NO_ACCESS cookie, well, that's too bad
-		try:
-			for cookie in self.request.cookies:
-				if cookie == no_access_cookie:
-					return 0
-		except KeyError as e:
-			pass
-	
-		access = self.get_secure_cookie(cookie_tag)
-		if access is not None:
-			return 2
-
-		return 1
-	
 	def validateUnprivilegedQuery(self, q_string):
 		if q_string == "":
 			return True
@@ -138,7 +155,7 @@ class RouteHandler(tornado.web.RequestHandler):
 					filename="%s/layout/opts/download_options.html" % static_path
 				).render())
 		
-		if status == 2:
+		if status == 2 or status == 3:
 			if route == "submission":
 				extra_tmpls.append(Template(
 					filename="%s/layout/opts/download_options.html" % static_path
@@ -158,14 +175,16 @@ class RouteHandler(tornado.web.RequestHandler):
 		auth_layout = None
 		q_string = self.request.query
 		
-		status = self.getStatus()
+		status = getStatus(self)
 		if status == 1:
 			auth_layout = Template(filename="%s/layout/authentication/login_ctrl.html" % static_path).render()
+			
 			auth_stopgap = Template(filename="%s/layout/errors/error_not_logged_in.html" % static_path).render()
 			
 			self.finish(main_layout.render(
 				template_content=auth_stopgap,
 				authentication_holder='',
+				search_ctrl='',
 				authentication_ctrl=auth_layout,
 				data=''
 			))
@@ -248,7 +267,7 @@ class RouteHandler(tornado.web.RequestHandler):
 				else:
 					layout = "main"
 
-			if status == 2:
+			if status == 2 or status == 3:
 				auth_layout = "logout_ctrl"
 			
 			tmpl = Template(filename="%s/layout/%s.html" % (static_path, layout))
@@ -259,15 +278,22 @@ class RouteHandler(tornado.web.RequestHandler):
 				authentication_holder = auth_tmpl.render()
 			
 			authentication_ctrl = ''
-			if status == 2:
+			if status == 3:
 				authentication_ctrl = Template(
 					filename="%s/layout/authentication/admin_ctrl.html" % static_path
+				).render()
+
+			search_ctrl = ''
+			if status == 2 or status == 3:
+				search_ctrl = Template(
+					filename="%s/layout/searches/search_ctrl.html" % static_path
 				).render()
 						
 			data = json.loads(r.text.replace(assets_path, ""))
 			self.finish(main_layout.render(
 				template_content=tmpl.render(extras="".join(tmpl_extras)),
 				authentication_holder=authentication_holder,
+				search_ctrl=search_ctrl,
 				authentication_ctrl=authentication_ctrl,
 				data=json.dumps(data)
 			))
@@ -282,23 +308,8 @@ class LeafletHandler(tornado.web.RequestHandler):
 
 class LoginHandler(tornado.web.RequestHandler):
 	@tornado.web.asynchronous
-	def getStatus(self):
-		# if you have a NO_ACCESS cookie, well, that's too bad
-		try:
-			for cookie in self.request.cookies:
-				if cookie == no_access_cookie:
-					return 0
-		except KeyError as e:
-			pass
-	
-		access = self.get_secure_cookie(cookie_tag)
-		if access is not None:
-			return 2
-
-		return 1
-		
 	def post(self):
-		if self.getStatus() == 0:
+		if getStatus(self) == 0:
 			self.finish({'ok':False})
 			return
 		
@@ -327,10 +338,17 @@ class LoginHandler(tornado.web.RequestHandler):
 			f.close()
 			
 			# decrypt it using supplied password.
-			plaintext = decrypt(ciphertext, password, p_salt=password_salt)	
+			plaintext = decrypt(ciphertext, password, p_salt=password_salt)			
 			
 			# if that works, send back plaintext
 			if plaintext is not None:
+				try:
+					if plaintext['admin']:
+						del plaintext['admin']
+						self.set_secure_cookie(admin_cookie_tag, "true", path="/", expires_days=1)
+				except KeyError as e:
+					pass
+
 				new_cookie = base64.b64encode(json.dumps(plaintext))
 				if new_cookie is not None:
 					self.set_secure_cookie(cookie_tag, new_cookie, path="/", expires_days=1)
@@ -345,32 +363,17 @@ class LoginHandler(tornado.web.RequestHandler):
 
 class LogoutHandler(tornado.web.RequestHandler):
 	@tornado.web.asynchronous
-	def getStatus(self):
-		# if you have a NO_ACCESS cookie, well, that's too bad
-		try:
-			for cookie in self.request.cookies:
-				if cookie == no_access_cookie:
-					return 0
-		except KeyError as e:
-			pass
-	
-		access = self.get_secure_cookie(cookie_tag)
-		if access is not None:
-			return 2
-
-		return 1
-		
 	def post(self):
-		if self.getStatus() == 0:
+		if getStatus(self) == 0:
 			self.finish({'ok':False})
 			return
 			
 		self.clear_cookie(cookie_tag)
+		self.clear_cookie(admin_cookie_tag)
 		
 		if self.request.body != "":		
 			try:			
 				credentials = json.loads(self.request.body)
-				print credentials
 				
 				auth = "%s.txt" % hashlib.sha1(credentials['user']['username'] + file_salt).hexdigest()
 				
@@ -409,6 +412,38 @@ class LogoutHandler(tornado.web.RequestHandler):
 		
 		self.finish({'ok':True})
 
+class UserHandler(tornado.web.RequestHandler):
+	def post(self):
+		if getStatus(self) != 3:
+			self.finish({'ok':False})
+			return
+		
+		username = None
+		password = None
+		
+		credentials = self.request.body
+		for kvp in credentials.split("&"):
+			kv = kvp.split("=")
+			if kv[0] == "username":
+				username = kv[1]
+			elif kv[0] == "password":
+				password = kv[1]
+		
+		if username is "" or password is "" or username is None or password is None:
+			self.finish({'ok':False})
+			return
+			
+		if not re.match(r'[a-zA-Z0-9_\-]', username):
+			print "THIS DOES NOT MATCH THE SPEC!"
+			self.finish({'ok':False})
+			return
+		
+		if createNewUser(username, password):
+			self.finish({'ok' : True})
+			return
+		
+		self.finish({'ok':False})
+
 static_path = os.path.join(os.path.dirname(__file__), "web")
 main_layout = Template(filename="%s/index.html" % static_path)
 media_routes = ["j3m", "media"]
@@ -437,6 +472,7 @@ routes = [
 	(r"/leaflet/(.*)", LeafletHandler, dict(route=None)),
 	(r"/login/", LoginHandler),
 	(r"/logout/", LogoutHandler),
+	(r"/user/", UserHandler),
 	(r"/ping/", PingHandler)
 ]
 
