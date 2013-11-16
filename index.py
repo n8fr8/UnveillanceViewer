@@ -174,6 +174,7 @@ class RouteHandler(tornado.web.RequestHandler):
 	def get(self, route):
 		auth_layout = None
 		q_string = self.request.query
+		extra_scripts = []
 		
 		status = getStatus(self)
 		if status == 1:
@@ -181,10 +182,15 @@ class RouteHandler(tornado.web.RequestHandler):
 			
 			auth_stopgap = Template(filename="%s/layout/errors/error_not_logged_in.html" % static_path).render()
 			
+			extra_scripts = Template(
+				filename="%s/layout/authentication/disable_user.html" % static_path
+			).render()
+			
 			self.finish(main_layout.render(
 				template_content=auth_stopgap,
 				authentication_holder='',
 				search_ctrl='',
+				extra_scripts=extra_scripts,
 				authentication_ctrl=auth_layout,
 				data=''
 			))
@@ -242,7 +248,6 @@ class RouteHandler(tornado.web.RequestHandler):
 			))
 			return
 		
-		extra_scripts = []
 		tmpl_extras = []
 		if format:
 			self.write(r.text.replace(assets_path, ""))
@@ -265,9 +270,6 @@ class RouteHandler(tornado.web.RequestHandler):
 			else:
 				if status == 0:
 					layout = "main_public"
-					extra_scripts.append(Template(
-						filename="%s/layout/authentication/disable_user.html" % static_path
-					).render())
 				else:
 					layout = "main"
 
@@ -275,6 +277,10 @@ class RouteHandler(tornado.web.RequestHandler):
 				auth_layout = "logout_ctrl"
 				extra_scripts.append(Template(
 					filename="%s/layout/authentication/enable_user.html" % static_path
+				).render())
+			else:
+				extra_scripts.append(Template(
+					filename="%s/layout/authentication/disable_user.html" % static_path
 				).render())
 			
 			tmpl = Template(filename="%s/layout/%s.html" % (static_path, layout))
