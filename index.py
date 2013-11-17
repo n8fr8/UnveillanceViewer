@@ -126,7 +126,6 @@ def getStatus(req):
 def checkForAdminParty():
 	for root_, dir_, files in os.walk(user_root):
 		for f in files:
-			print "not admin party!"
 			return False
 	
 	return True
