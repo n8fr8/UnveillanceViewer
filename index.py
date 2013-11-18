@@ -7,7 +7,7 @@ import tornado.web
 import tornado.httpserver
 from mako.template import Template
 
-from conf import server_port, use_ssl, cert_file, key_file, auth_root, user_root, uurl, assets_path, cookie_tag, admin_cookie_tag, cookie_secret, no_access_cookie, imports_root
+from conf import server_port, use_ssl, cert_file, key_file, auth_root, user_root, uurl, assets_path, cookie_tag, admin_cookie_tag, cookie_secret, no_access_cookie
 
 def terminationHandler(signal, frame):
 	sys.exit(0)
