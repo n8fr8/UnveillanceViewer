@@ -6,7 +6,9 @@ after cloning, run:
 
 install dependencies (not included in package):
 
-	sudo apt-get install python-dev python-setuptools
+	sudo apt-get install python-dev python-setuptools python-pip
+	pip install backports
+	pip install backports.ssl_match_hostname
 
 install mako, requests, tornado:
 
