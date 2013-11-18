@@ -448,6 +448,15 @@ class LogoutHandler(tornado.web.RequestHandler):
 		
 		self.finish({'ok':True})
 
+class ImportHandler(tornado.web.RequestHandler):
+	def post(self):
+		status = getStatus(self)
+		if status != 3:
+			self.finish({'ok':False})
+			return
+		
+		self.finish({'ok':False})
+
 class UserHandler(tornado.web.RequestHandler):
 	def post(self):		
 		status = getStatus(self)
@@ -505,12 +514,13 @@ credential_pack = {
 }
 
 routes = [
-	(r"/([^web/|login/|logout/|ping/|leaflet/|upanel/][a-zA-Z0-9/]*/$)?", RouteHandler, dict(route=None)),
+	(r"/([^web/|login/|logout/|ping/|leaflet/|upanel/|import/][a-zA-Z0-9/]*/$)?", RouteHandler, dict(route=None)),
 	(r"/web/([a-zA-Z0-9\-/\._]+)", tornado.web.StaticFileHandler, {"path" : static_path }),
 	(r"/leaflet/(.*)", LeafletHandler, dict(route=None)),
 	(r"/login/", LoginHandler),
 	(r"/logout/", LogoutHandler),
 	(r"/upanel/", UserHandler),
+	(r"/import/", ImportHandler),
 	(r"/ping/", PingHandler)
 ]
 

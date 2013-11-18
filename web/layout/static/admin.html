@@ -1,6 +1,13 @@
 <script type="text/javascript" src="/web/js/user_admin.js"></script>
+<script type="text/javascript" src="/web/js/dropzone.js"></script>
 <h3><span class="translatable ic_user_alias">Admin</span> <a class="ic_exit" rel="aux_popup">[x]</a></h3>
 <ul class="ic_panel_ul">
+	<li>
+		<a class="ic_button ic_panel_header" onclick="toggleElement('#import_media');">Import Media</a>
+		<div id="import_media">
+			<form action="/import/" class="dropzone" id="import_media_dropzone"></form>
+		</div>
+	</li>
 	<li>
 		<a class="ic_button ic_panel_header" onclick="toggleElement('#add_new_user');">Add a new user</a>
 		<div id="add_new_user" style="display:none;">

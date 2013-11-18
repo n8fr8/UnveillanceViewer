@@ -148,7 +148,7 @@ function killAuxPopup() {
 	$("#aux_popup_holder").css('display', 'none');
 	$("#aux_popup").css({
 		'width': 'auto',
-		'margin-top' : '25%'
+		'margin-top' : '15%'
 	});
 	window.history.back();
 }
