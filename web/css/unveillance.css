@@ -373,6 +373,13 @@ ul.ic_panel_ul li {
 	display:table-row;
 }
 
+#aux_popup textarea#ic_anno_content {
+	width:90%;
+	min-height:200px;
+	margin:5%;
+	font-family:'lato-regular';
+}
+
 .ic_thumb {
 	width:100px;
 	height:100px

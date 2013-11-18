@@ -64,7 +64,7 @@ var User = function() {
 };
 
 function doAdmin() {
-	if(u_user != null && u_user != undefined) {
+	if(u_user != undefined && u_user != null) {
 		$.ajax({
 			url: "/web/layout/static/admin.html",
 			dataType: "html",
@@ -72,5 +72,23 @@ function doAdmin() {
 				renderAuxContent(Mustache.to_html(html, u_user.asJson()));
 			}
 		});
+	}
+}
+
+function doAnnotate() {
+	if(u_user != undefined && u_user != null) {
+		$.ajax({
+			url: "/web/layout/static/annotate.html",
+			dataType: "html",
+			success: function(html) {
+				renderAuxContent(Mustache.to_html(html, u_user.asJson()));
+			}
+		});
+	}
+}
+
+function saveAnnotation() {
+	if(u_user != undefined && u_user != null) {
+		console.info(window.location.href);
 	}
 }

@@ -1,0 +1,50 @@
+<script>
+var tag_template;
+$.ajax({
+	url: "/web/layout/opts/freetag_template.html",
+	dataType: "html",
+	success: function(html) {
+		tag_template = html;
+	}
+});
+
+function initTags() {
+	if(toggleElement("#ic_anno_tag_holder")) {
+		if($("#ic_anno_tag_holder").children().length == 0) {
+			addFreeTag();
+		}
+	}
+}
+
+function addFreeTag() {
+	var tag = $(tag_template).clone();
+	console.info(tag);
+	$("#ic_anno_tag_holder").append(tag);
+}
+
+function removeFreeTag(el) {
+	$($(el).parent()).remove();
+	if($("#ic_anno_tag_holder").children().length == 0) {
+		toggleElement("#ic_anno_tag_holder");
+	}
+}
+
+</script>
+
+<h3>Annotations <a class="ic_exit" rel="aux_popup">[x]</a></h3>
+<ul class="ic_panel_ul">
+	<li id="ic_annotations_so_far">
+		<a class="ic_button ic_panel_header">Annotations so far</a>
+		<div id="ic_anno_holder"></div>
+	</li>
+	<li>
+		<a class="ic_button ic_panel_header" onclick="toggleElement('#ic_anno_content');">Add Text</a>
+		<textarea id="ic_anno_content" style="display:none;"></textarea>
+	</li>
+	
+	<li>
+		<a class="ic_button ic_panel_header" onclick="initTags();">Add Tags</a>
+		<div id="ic_anno_tag_holder" style="display:none;"></div>
+	</li>
+</ul>
+<a class="ic_button ic_note_bene" style="margin-left:10px;" onclick="saveAnnotation();">Submit</a>

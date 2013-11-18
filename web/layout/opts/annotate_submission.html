@@ -1,0 +1,18 @@
+<script>
+	var initAnnotateSubmission = (function() {
+		$(".ic_opts").append(
+			$(document.createElement('a'))
+				.html("Annotations")
+				.attr({
+					'class' : 'ic_button',
+					'href' : "#annotate"
+				})
+				.css('margin-left', 6)
+		);
+	});
+	
+	if(onDataLoaded.indexOf("initAnnotateSubmission") == -1) {
+		onDataLoaded.push("initAnnotateSubmission");
+		initAnnotateSubmission();
+	}
+</script>

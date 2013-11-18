@@ -221,6 +221,10 @@ function killAuxPopup() {
 		this.get('#admin', function(context) {
 			doAdmin();
 		});
+		
+		this.get('#annotate', function(context) {
+			doAnnotate();
+		});
 
 	});
 
