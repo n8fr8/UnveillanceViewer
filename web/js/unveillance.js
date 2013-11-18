@@ -109,7 +109,12 @@ function renderJ3M(data) {
 }
 
 function renderJ3MMap(points) {
-	$("#map").css('height', $("#footer").position().top * .93);
+	try {
+		$("#map").css('height', $("#footer").position().top * .93);
+	} catch(err) {
+		return;
+	}
+	
 	var cloudmadeApiKey = '23c00ae936704081ab019253c36a55b3';
 	
 	map = L.map('map').setView([0,0], 2);

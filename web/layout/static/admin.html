@@ -1,12 +1,64 @@
 <script type="text/javascript" src="/web/js/user_admin.js"></script>
-<script type="text/javascript" src="/web/js/dropzone.js"></script>
+
 <h3><span class="translatable ic_user_alias">Admin</span> <a class="ic_exit" rel="aux_popup">[x]</a></h3>
 <ul class="ic_panel_ul">
 	<li>
-		<a class="ic_button ic_panel_header" onclick="toggleElement('#import_media');">Import Media</a>
-		<div id="import_media">
-			<form action="/import/" class="dropzone" id="import_media_dropzone"></form>
+		<a class="ic_button ic_panel_header" onclick="initUpload();">Import Media</a>
+		<div id="import_media" style="display:none;">
+			<form action="/import/" class="dropzone" id="importmediadropzone"></form>
 		</div>
+		<script type="text/javascript" src="/web/js/dropzone.js"></script>
+		<script>
+			var import_media;
+			
+			Dropzone.autoDiscover = false;
+			$.ajax({
+				url: "/web/layout/static/dropzone.html",
+				dataType: "html",
+				success: function(html) {
+					Dropzone.options.importmediadropzone = {
+						previewTemplate : html,
+						maxFiles : 5,
+						acceptedFiles : 
+							["image/jpeg","video/x-matroska","text/plain"].join(",")
+					};
+				}
+			});
+			
+			function initUpload() {
+				if(toggleElement('#import_media') && import_media == undefined) {
+					import_media = new Dropzone("#importmediadropzone");
+					
+					import_media.on("success", function(file, res) {
+						var el = "#" + file.name.replace(".","_") + " .dz-details .ic_progress_holder span.ic_progress_img";
+						swapImage(el, res.ok);
+						
+						window.setTimeout(function() {
+							$("#" + file.name.replace(".","_")).remove();
+							import_media.removeFile(file);
+
+						}, 3000);
+					});
+					
+					import_media.on("error", function(files, err, xhr) {
+						console.info("error");
+						console.info(err);
+						
+						$("#import_media_result_error").css('display','block');
+						import_media.removeAllFiles(true);
+					});
+				
+					import_media.on("addedfile", function(file) {
+						console.info("added files!");
+						var d = $(".ic_data_name_holder:contains('" + file.name + "')")[0];
+						var associated_div = $($($($(d).parent()).parent()).parent()).parent();
+						$(associated_div).attr('id',file.name.replace(".", "_"));
+						console.info($(associated_div));
+						
+					});
+				}
+			}
+		</script>
 	</li>
 	<li>
 		<a class="ic_button ic_panel_header" onclick="toggleElement('#add_new_user');">Add a new user</a>
