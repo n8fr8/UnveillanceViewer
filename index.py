@@ -460,12 +460,18 @@ class ImportHandler(tornado.web.RequestHandler):
 			return
 		
 		try:
-			f = open(os.path.join(imports_root, self.request.files['file'][0]['filename']), 'wb+')
-			f.write(self.request.files['file'][0]['body'])
-			f.close()
-			self.finish({'ok':True})
+			file = {
+				'file' : (
+					self.request.files['file'][0]['filename'], 
+					self.request.files['file'][0]['body']
+				)
+			}
+			r = requests.post("%simport/" % uurl, files=file)
+			self.finish(json.loads(r.content))
 			return
-		except:
+			
+		except requests.exceptions.ConnectionError as e:
+			print e
 			pass
 			
 		self.finish({'ok':False})
