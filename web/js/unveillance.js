@@ -3,7 +3,6 @@ var j3m_viewer = null;
 var onDataLoaded = [];
 
 function toggleElement(el) {
-	console.info($(el));
 	if($(el).css('display') == "block") {
 		$(el).css('display','none');
 		return false;
@@ -14,7 +13,6 @@ function toggleElement(el) {
 }
 
 function swapImage(el, swap) {
-	console.info($(el));
 	if(swap) {
 		$($(el).children('img')[0]).attr('src', "/web/images/" + $(el).attr('swap_a'));
 	} else {

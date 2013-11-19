@@ -35,6 +35,10 @@ var ICSearch = function() {
 			{
 				label: "were taken by...",
 				tmpl: "by_sourceID.html",
+			},
+			{
+				label: "were taken in view of...",
+				tmpl: "by_broadcast.html"
 			}
 		];
 		
@@ -149,14 +153,13 @@ var ICSearch = function() {
 		return false;
 	}
 	
-	this.validateQuery = function(query) {
-		return true;
-	}
-	
 	this.massageInput = function(clause_obj) {
-		console.info(clause_obj);
 		for(key in clause_obj) {
 			var val = clause_obj[key];
+			if(val == "") {
+				delete clause_obj[key]
+			}
+			
 			switch(key) {
 			case "dateCreated_lower":
 				clause_obj.date = moment(val, "MM/DD/YYYY HH:mm").unix() * 1000;
@@ -191,6 +194,9 @@ var ICSearch = function() {
 			case "sourceID":
 				clause_obj = val;
 				break;
+			case "bssid":
+				clause_obj = val;
+				break;
 			}
 			
 			
@@ -206,27 +212,35 @@ var ICSearch = function() {
 			query.push("mime_type=\"" + this.root_type + "\"");
 		}
 		
-		$.each(this.clauses, function(idx, item) {
-			var clause = {}
-			$.each($(item.render).find("input[type=text]"), function(idx_, item_) {
-				clause[$(item_).attr('name')] = $(item_).val();
+		$.each(this.clauses, function(idx, item) {			
+			$.each($(item.render).find("input[type=hidden]"), function(idx_, item_) {
+				var tag = $(item_).val();
+				var clause = {}
+				
+				$.each($(item.render).find("input[type=text][rel='" + tag + "']"), function(idx__, item__) {
+					clause[$(item__).attr('name')] = $(item__).val();
+				});
+				
+				val = ctx.massageInput(clause);
+				if(typeof val == "object") {
+					val = JSON.stringify(val);
+				}
+				query.push(tag + "=" + val);
 			});
-			
-			var tag = $($(item.render).find("input[type=hidden]")[0]).val();
-			val = ctx.massageInput(clause);
-			if(typeof val == "object") {
-				val = JSON.stringify(val);
-			}
-			query.push(tag + "=" + val);
 		});
 		
-		if(this.validateQuery(query)) {
-			var q_string = "/submissions/";
-			if(this.root_type == "sources") {
-				q_string = "/sources/";
+		for(var q=0; q<query.length; q++) {			
+			if(query[q].split("=")[1] == "" || query[q].split("=")[1] == "{}") {
+				query.splice(q, 1);
 			}
-			
-			window.location = q_string + "?" + query.join("&");
 		}
+		
+		var q_string = "/submissions/";
+		if(this.root_type == "sources") {
+			q_string = "/sources/";
+		}
+		
+		console.info(q_string + "?" + query.join("&"));
+		window.location = q_string + "?" + query.join("&");	
 	}
 }
