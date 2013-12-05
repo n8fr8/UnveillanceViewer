@@ -93,7 +93,7 @@ body {
 	height:auto;
 	text-align:left;
 	margin:auto;
-	margin-top:25%;
+	margin-top:15%;
 	display:inline-block;
 	padding-bottom:10px;
 }
@@ -264,7 +264,7 @@ input, select {
 	font-family: 'lato-hairline-italic';
 }
 
-.ic_note_bene {
+.ic_note_bene, .dz-drag-hover {
 	background-color:#fff39b;
 	border:1px solid #ffc232;
 }
@@ -373,6 +373,13 @@ ul.ic_panel_ul li {
 	display:table-row;
 }
 
+#aux_popup textarea#ic_anno_content {
+	width:90%;
+	min-height:200px;
+	margin:5%;
+	font-family:'lato-regular';
+}
+
 .ic_thumb {
 	width:100px;
 	height:100px
@@ -434,4 +441,56 @@ vertical-align:top;
 	margin:6px;
 	padding:6px;
 	background-color:#eee;
+}
+
+.dropzone .dz-default {
+	font-family: "lato-regular";
+	font-size:0.7em;
+	text-align:center;
+	padding:10px;
+}
+
+.dz-clickable {
+	border:1px solid #999999;
+	background-color:#fff;
+}
+
+.dz-preview {
+	font-size:0.7em;
+	font-family:'lato-regular';
+	min-height:100px;
+}
+
+.dz-filename {
+	position:relative;
+	height:100px;
+}
+
+.dz-progress {
+	position:relative;
+	width:90%;
+	border:1px solid #ffc232;
+	height:16px;
+	display:inline-block;
+}
+
+.dz-progress .dz-upload {
+	height:inherit;
+	background-color:#fff39b;
+	display:block;
+}
+
+.ic_progress_holder span.ic_progress_img {
+	float:right;
+	display:inline-block;
+	margin-top:10px;
+}
+
+.ic_progress_holder img {
+	width:16px;
+	height:16px;
+}
+
+.dz-details .dz-filename img, .dz-details .dz-filename div {
+	float:left;
 }

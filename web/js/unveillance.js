@@ -3,7 +3,6 @@ var j3m_viewer = null;
 var onDataLoaded = [];
 
 function toggleElement(el) {
-	console.info($(el));
 	if($(el).css('display') == "block") {
 		$(el).css('display','none');
 		return false;
@@ -14,7 +13,6 @@ function toggleElement(el) {
 }
 
 function swapImage(el, swap) {
-	console.info($(el));
 	if(swap) {
 		$($(el).children('img')[0]).attr('src', "/web/images/" + $(el).attr('swap_a'));
 	} else {
@@ -109,7 +107,12 @@ function renderJ3M(data) {
 }
 
 function renderJ3MMap(points) {
-	$("#map").css('height', $("#footer").position().top * .93);
+	try {
+		$("#map").css('height', $("#footer").position().top * .93);
+	} catch(err) {
+		return;
+	}
+	
 	var cloudmadeApiKey = '23c00ae936704081ab019253c36a55b3';
 	
 	map = L.map('map').setView([0,0], 2);
@@ -148,7 +151,7 @@ function killAuxPopup() {
 	$("#aux_popup_holder").css('display', 'none');
 	$("#aux_popup").css({
 		'width': 'auto',
-		'margin-top' : '25%'
+		'margin-top' : '15%'
 	});
 	window.history.back();
 }
@@ -215,6 +218,10 @@ function killAuxPopup() {
 		
 		this.get('#admin', function(context) {
 			doAdmin();
+		});
+		
+		this.get('#annotate', function(context) {
+			doAnnotate();
 		});
 
 	});

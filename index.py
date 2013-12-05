@@ -173,6 +173,10 @@ class RouteHandler(tornado.web.RequestHandler):
 				extra_tmpls.append(Template(
 					filename="%s/layout/opts/download_options.html" % static_path
 				).render())
+				
+				extra_tmpls.append(Template(
+					filename="%s/layout/opts/annotate_submission.html" % static_path
+				).render())
 			
 			if as_search_result:
 				extra_tmpls.append(Template(
@@ -448,6 +452,30 @@ class LogoutHandler(tornado.web.RequestHandler):
 		
 		self.finish({'ok':True})
 
+class ImportHandler(tornado.web.RequestHandler):
+	def post(self):
+		status = getStatus(self)
+		if status != 3:
+			self.finish({'ok':False})
+			return
+		
+		try:
+			file = {
+				'file' : (
+					self.request.files['file'][0]['filename'], 
+					self.request.files['file'][0]['body']
+				)
+			}
+			r = requests.post("%simport/" % uurl, files=file)
+			self.finish(json.loads(r.content))
+			return
+			
+		except requests.exceptions.ConnectionError as e:
+			print e
+			pass
+			
+		self.finish({'ok':False})
+
 class UserHandler(tornado.web.RequestHandler):
 	def post(self):		
 		status = getStatus(self)
@@ -505,12 +533,13 @@ credential_pack = {
 }
 
 routes = [
-	(r"/([^web/|login/|logout/|ping/|leaflet/|upanel/][a-zA-Z0-9/]*/$)?", RouteHandler, dict(route=None)),
+	(r"/([^web/|login/|logout/|ping/|leaflet/|upanel/|import/][a-zA-Z0-9/]*/$)?", RouteHandler, dict(route=None)),
 	(r"/web/([a-zA-Z0-9\-/\._]+)", tornado.web.StaticFileHandler, {"path" : static_path }),
 	(r"/leaflet/(.*)", LeafletHandler, dict(route=None)),
 	(r"/login/", LoginHandler),
 	(r"/logout/", LogoutHandler),
 	(r"/upanel/", UserHandler),
+	(r"/import/", ImportHandler),
 	(r"/ping/", PingHandler)
 ]
 
