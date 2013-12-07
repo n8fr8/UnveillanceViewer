@@ -160,12 +160,10 @@ class RouteHandler(tornado.web.RequestHandler):
 	def getExtraScriptsByStatus(self, status, route):
 		exts = []
 		
-		'''
 		if status == 2 or status == 3:
 			if route is not None:
 				if route[0] == "submission":
-					exts.append(Template(filename="%s/js/media_browser.js" % static_path).render())
-		'''
+					exts.append(Template(filename="%s/layout/opts/media_browser.html" % static_path).render())
 		
 		return exts
 	
