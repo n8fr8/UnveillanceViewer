@@ -9,7 +9,7 @@ var MediaBrowser = function() {
 	
 	this.drawFormData = function(formData) {
 		var formHolder = new createjs.Shape();
-		formHolder.graphics.s("#8B2222").r(
+		formHolder.graphics.s("#09BDFF").r(
 			formData.formRegion.displayLeft, 
 			formData.formRegion.displayTop, 
 			formData.formRegion.displayWidth, 
