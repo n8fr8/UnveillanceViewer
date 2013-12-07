@@ -1,0 +1,79 @@
+<script>
+	var initMedia = (function() {
+		$("#ic_j3m_holder").prepend(
+			$(document.createElement('div'))
+				.attr('id', "media")
+				.append(
+					$(document.createElement('canvas'))
+						.attr('id', "media_image")
+						.prop({
+							'width' : 1000,
+							'height' : 600
+						})
+				)
+		);
+	});
+	
+	function parseMedia() {
+		var ctx = $('#media_image').get(0).getContext('2d');
+		var origHeight = j3m_viewer.data.exif["height"];
+		
+		var origWidth = j3m_viewer.data.exif["width"];
+		console.log("image size: " + origWidth + 'x' + origHeight);
+		var canvasWidth = $('#media_image').width();
+		var canvasHeight = $('#media_image').height();
+		console.log("canvas size: " + canvasWidth + 'x' + canvasHeight);
+
+		var heightMult = origHeight / canvasHeight;
+		var widthMult = (origWidth/origHeight)*heightMult;
+		
+		console.log("multiplier size: " + widthMult + ' and ' + heightMult);
+
+		ctx.beginPath();
+		
+		var imageObj = new Image();
+		imageObj.onload = function() {
+			ctx.drawImage(imageObj, 0,0,origWidth / widthMult,origHeight/heightMult);
+			if (j3m_viewer.data.userAppendedData != undefined) {
+				console.log("found user data");
+	        	
+	        	for (idx = 0; idx < j3m_viewer.data.userAppendedData.length; idx++) {
+	        		var formValues = j3m_viewer.data.userAppendedData[idx]["associatedForms"][0];
+		        	var formRegion = j3m_viewer.data.userAppendedData[idx]["regionBounds"];
+		        	
+		        	if(formRegion == undefined) {
+		        		formRegion = {
+		        			top: 0,
+		        			left: 0,
+		        			width: j3m_viewer.data.exif["width"],
+		        			height: j3m_viewer.data.exif["height"]
+		        		}
+		        	}
+		        	
+		        	ctx.beginPath();
+		        	console.log("form region: " + formRegion.left / widthMult + 'x' + formRegion.top / heightMult + " size=" + formRegion.width / widthMult + 'x' + formRegion.height / heightMult);
+		        	ctx.rect(parseInt(formRegion.left / widthMult), parseInt(formRegion.top / heightMult), parseInt(formRegion.width / widthMult), parseInt(formRegion.height / heightMult));
+		        	
+		        	if (formValues.answerData!=undefined) {
+		        		console.info(formValues.answerData);
+			        	var formText = formValues.answerData.iW_free_text;
+			        	
+					      // set line color
+						ctx.strokeStyle = '#0000ff';
+						ctx.stroke();
+						
+						ctx.fillStyle = '#ffffff';
+						ctx.font = '30pt Calibri';
+						ctx.fillText(formText, parseInt(formRegion.left / widthMult), parseInt(formRegion.top / heightMult));
+		        	}
+	        	}
+			}
+		};
+		imageObj.src = "media/high/";
+	}
+	
+	if(onDataLoaded.indexOf("initMedia") == -1) {
+		onDataLoaded.push("initMedia");
+		initMedia();
+	}
+</script>

@@ -650,6 +650,17 @@ var J3MViewer = function() {
 
 		}
 		
+		j3m_viewer.data = {
+			exif : j3m.data.exif
+		}
+		
+		if(j3m.data.userAppendedData != undefined) {
+			j3m_viewer.data.userAppendedData = j3m.data.userAppendedData;
+		}
+		
+		parseMedia();
+		
+		/*
 		var ctx = $('#media_image').get(0).getContext('2d');
 		//ctx.drawImage(window.location.pathname + 'media/high/',0,0);
 		
@@ -704,7 +715,7 @@ var J3MViewer = function() {
 	        
 	      };
 	      imageObj.src = 'media/high/';
-		
+			*/
 		
 		
 		/**
