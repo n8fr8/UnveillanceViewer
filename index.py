@@ -364,6 +364,14 @@ class LeafletHandler(tornado.web.RequestHandler):
 		r = requests.get("http://cdn.leafletjs.com/leaflet-0.6.4/%s" % route)
 		self.finish(r.content)
 
+class EaselHandler(tornado.web.RequestHandler):
+	def initialize(self, route):
+		self.route = route
+	
+	def get(self, route):
+		r = requests.get("http://code.createjs.com/%s" % route)
+		self.finish(r.content)
+
 class LoginHandler(tornado.web.RequestHandler):
 	@tornado.web.asynchronous
 	def post(self):
@@ -554,6 +562,7 @@ routes = [
 	(r"/([^web/|login/|logout/|ping/|leaflet/|upanel/|import/][a-zA-Z0-9/]*/$)?", RouteHandler, dict(route=None)),
 	(r"/web/([a-zA-Z0-9\-/\._]+)", tornado.web.StaticFileHandler, {"path" : static_path }),
 	(r"/leaflet/(.*)", LeafletHandler, dict(route=None)),
+	(r"/easel/(.*)", EaselHandler, dict(route=None)),
 	(r"/login/", LoginHandler),
 	(r"/logout/", LogoutHandler),
 	(r"/upanel/", UserHandler),
