@@ -59,6 +59,15 @@ body {
 	padding:0px;
 }
 
+#media {
+	background:#555555;
+	text-align:center;
+}
+
+#media_image
+{
+}
+
 #content #ic_j3m_holder.ic_content_holder #map {
 	height:400px;
 }

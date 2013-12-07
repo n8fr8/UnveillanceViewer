@@ -173,10 +173,11 @@ class RouteHandler(tornado.web.RequestHandler):
 				extra_tmpls.append(Template(
 					filename="%s/layout/opts/download_options.html" % static_path
 				).render())
-				
-				extra_tmpls.append(Template(
-					filename="%s/layout/opts/annotate_submission.html" % static_path
-				).render())
+			
+			# no annotations for now please	
+			#	extra_tmpls.append(Template(
+			#		filename="%s/layout/opts/annotate_submission.html" % static_path
+			#	).render())
 			
 			if as_search_result:
 				extra_tmpls.append(Template(
