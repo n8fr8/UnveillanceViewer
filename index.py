@@ -156,16 +156,27 @@ class RouteHandler(tornado.web.RequestHandler):
 				return False
 				
 		return True
+		
+	def getExtraScriptsByStatus(self, status, route):
+		exts = []
+		
+		if status == 2 or status == 3:
+			if route is not None:
+				if route[0] == "submission":
+					exts.append(Template(filename="%s/layout/opts/media_browser.html" % static_path).render())
+		
+		return exts
 	
 	def getExtraTemplatesByStatus(self, status, route, as_search_result=False):
 		extra_tmpls = []
-		print route
-		print status
 		
 		if status == 0:
 			if route == "submission":
 				extra_tmpls.append(Template(
 					filename="%s/layout/opts/download_options.html" % static_path
+				).render())
+				extra_tmpls.append(Template(
+					filename="%s/layout/opts/j3mviewer_public.html" % static_path
 				).render())
 		
 		if status == 2 or status == 3:
@@ -173,10 +184,14 @@ class RouteHandler(tornado.web.RequestHandler):
 				extra_tmpls.append(Template(
 					filename="%s/layout/opts/download_options.html" % static_path
 				).render())
-				
 				extra_tmpls.append(Template(
-					filename="%s/layout/opts/annotate_submission.html" % static_path
+					filename="%s/layout/opts/j3mviewer_user.html" % static_path
 				).render())
+			
+			# no annotations for now please	
+			#	extra_tmpls.append(Template(
+			#		filename="%s/layout/opts/annotate_submission.html" % static_path
+			#	).render())
 			
 			if as_search_result:
 				extra_tmpls.append(Template(
@@ -327,6 +342,8 @@ class RouteHandler(tornado.web.RequestHandler):
 			search_ctrl = Template(
 				filename="%s/layout/searches/search_ctrl.html" % static_path
 			).render()
+			
+			extra_scripts.extend(self.getExtraScriptsByStatus(status, route))
 						
 			data = json.loads(r.text.replace(assets_path, ""))
 			self.finish(main_layout.render(
@@ -337,6 +354,7 @@ class RouteHandler(tornado.web.RequestHandler):
 				authentication_ctrl=authentication_ctrl,
 				data=json.dumps(data)
 			))
+			print extra_scripts
 
 class LeafletHandler(tornado.web.RequestHandler):
 	def initialize(self, route):
@@ -344,6 +362,14 @@ class LeafletHandler(tornado.web.RequestHandler):
 	
 	def get(self, route):
 		r = requests.get("http://cdn.leafletjs.com/leaflet-0.6.4/%s" % route)
+		self.finish(r.content)
+
+class EaselHandler(tornado.web.RequestHandler):
+	def initialize(self, route):
+		self.route = route
+	
+	def get(self, route):
+		r = requests.get("http://code.createjs.com/%s" % route)
 		self.finish(r.content)
 
 class LoginHandler(tornado.web.RequestHandler):
@@ -536,6 +562,7 @@ routes = [
 	(r"/([^web/|login/|logout/|ping/|leaflet/|upanel/|import/][a-zA-Z0-9/]*/$)?", RouteHandler, dict(route=None)),
 	(r"/web/([a-zA-Z0-9\-/\._]+)", tornado.web.StaticFileHandler, {"path" : static_path }),
 	(r"/leaflet/(.*)", LeafletHandler, dict(route=None)),
+	(r"/easel/(.*)", EaselHandler, dict(route=None)),
 	(r"/login/", LoginHandler),
 	(r"/logout/", LogoutHandler),
 	(r"/upanel/", UserHandler),

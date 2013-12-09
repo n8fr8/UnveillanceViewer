@@ -59,6 +59,15 @@ body {
 	padding:0px;
 }
 
+#media {
+	background:#555555;
+	text-align:center;
+}
+
+#media_image
+{
+}
+
 #content #ic_j3m_holder.ic_content_holder #map {
 	height:400px;
 }
@@ -300,6 +309,10 @@ input, select {
 	background-color:#ffbe99;
 }
 
+#content #ic_j3m_holder #media .ic_formdata_holder {
+	font-size:0.8em;
+}
+
 .ic_label {
 	font-weight:bold;
 }
@@ -425,6 +438,14 @@ text-align:center;
 {
 	height:400px;
 	width:50%;
+}
+
+#content #ic_j3m_holder #media .ic_formdata_holder {
+	position:absolute;
+	padding:0 10px;
+	margin:0;
+	background-color:#ffffff;
+	border:1px solid #cccccc;
 }
 
 #logo_icon

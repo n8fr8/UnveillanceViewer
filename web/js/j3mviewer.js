@@ -393,12 +393,12 @@ var J3MViewer = function() {
 					.attr('id', name + 'Chart')
 					.prop({
 						'height' : 300,
-						'width' : $("#ic_j3m_holder").width()/2.1
+						'width' : 300
 					})
 			);
   		$("#ic_j3m_holder").append($(document.createElement('div'))
   				.css('float', 'left')
-  				.css('width', '48%')
+  				.css('width', '300')
   				.css('margin','6px')
   				.css('border','1px solid #ccc').append(inner_span));
 
@@ -561,9 +561,9 @@ var J3MViewer = function() {
 			
 		}
 		
-		if (j3m_viewer.sensorData["pressureHPAOrMBAR"])
+		if (j3m_viewer.sensorData["pressureAltitude"])
 		{
-			var altitude = Math.round(getAltitude(PRESSURE_STANDARD_ATMOSPHERE,j3m_viewer.sensorData["pressureHPAOrMBAR"][0].value));
+			var altitude = Math.round(j3m_viewer.sensorData["pressureAltitude"][0].value);
 		
 			j3m_viewer.addItem("ic_data_altitude.png","Altitude",altitude + "M");
 		}
@@ -583,7 +583,7 @@ var J3MViewer = function() {
 					
 		}
 		
-		var bearing = getBearingFromAzimuth(j3m_viewer.sensorData["azimuth"][0].value);
+		var bearing = getBearingFromAzimuth(j3m_viewer.sensorData["azimuthCorrected"][0].value);
 		
 		j3m_viewer.addItem("ic_data_compass.png","Bearing",bearing);
 		
@@ -593,18 +593,18 @@ var J3MViewer = function() {
 
 		j3m_viewer.addBreak();
 		
-		
+		/**
 		if (j3m.data.userAppendedData) {
 			j3m_viewer.addList("UserData", j3m.data.userAppendedData);
-		}
+		}*/
 
 		j3m_viewer.addBreak();
 
 		j3m_viewer.addMultiChart(
 			"PitchRollAzimuth","Pitch, Roll &amp; Azimuth",
-			j3m_viewer.sensorData["pitch"],
-			j3m_viewer.sensorData["roll"],
-			j3m_viewer.sensorData["azimuth"]
+			j3m_viewer.sensorData["pitchCorrected"],
+			j3m_viewer.sensorData["rollCorrected"],
+			j3m_viewer.sensorData["azimuthCorrected"]
 		);
 
 		j3m_viewer.addMultiChart(
@@ -633,7 +633,7 @@ var J3MViewer = function() {
 		
 		j3m_viewer.addBreak();
 
-		if(j3m_viewer.sensorData["ssid"] != undefined) {
+		if(j3m_viewer.sensorData["ssid"]) {
 			j3m_viewer.addDonutChart("ssid","Local Wifi Devices","ic_data2_wifi.png",j3m_viewer.sensorData["ssid"],"48%");
 			//j3m_viewer.addSortedList("ssid","Local Wifi Devices",j3m_viewer.sensorData["ssid"],"600px","ic_data2_wifi.png");
 		}
@@ -644,11 +644,35 @@ var J3MViewer = function() {
 
 		}
 
-		if(j3m_viewer.sensorData["cellTowerId"] != undefined) {
+		if(j3m_viewer.sensorData["cellTowerId"]) {
 		//	j3m_viewer.addDonutChart("cellTowerId",j3m_viewer.sensorData["cellTowerId"],"400px");
 			j3m_viewer.addSortedList("cellTowerId","Mobile Network ID",j3m_viewer.sensorData["cellTowerId"],"48%","ic_data2_cell.png");
 
 		}
+		
+		j3m_viewer.data = {
+			exif : j3m.data.exif
+		}
+		
+		if(j3m.data.userAppendedData != undefined) {
+			j3m_viewer.data.userAppendedData = j3m.data.userAppendedData;
+		}
+		
+		parseMedia();
+				
+		/**
+		 * userAppendedData": [{"associatedForms": [{"path": "/forms/493dde68c49e6b99556186a3e776d705.xml", 
+		 * "namespace": "iWitness Free Text Annotations", "id": "109dadec7e02bc7927e1271931d45c95", 
+		 * "answerData": {"iW_free_text": "good to the last drop"}}], "timestamp": 1384784027749, 
+		 * "regionBounds": {"top": 1284, "displayLeft": 362, "height": 708, "width": 225, "displayWidth": 115, 
+		 * "startTime": -1, "displayTop": 214, "displayHeight": 118, "endTime": -1, "left": 966}, 
+		 * "id": "23d5b9dc9ab303b376918814a9f07342", "index": 0}, {"associatedForms": 
+		 * [{"path": "/forms/493dde68c49e6b99556186a3e776d705.xml", "namespace": "iWitness Free Text Annotations", 
+		 * "id": "109dadec7e02bc7927e1271931d45c95", "answerData": {"iW_free_text": "good to the last drop"}}],
+		 *  "timestamp": 1384784027749, "regionBounds": {"top": 1284, "displayLeft": 362, "height": 708, "width":
+		 *   225, "displayWidth": 115, "startTime": -1, "displayTop": 214, "displayHeight": 118, "endTime": -1,
+		 *    "left": 966}, "id": "23d5b9dc9ab303b376918814a9f07342", "index": 0}]}}], "result": 200}
+		 */
 
 
 		j3m_viewer.addBreak();
