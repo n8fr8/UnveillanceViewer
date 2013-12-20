@@ -10,9 +10,8 @@
 			<span>{{ fingerprint }}</span>
 		</p>
 		<p>
-			<a id="recent_submissions_ctrl_{{ _id }}">recent submissions...</a>
+			<a id="recent_submissions_ctrl_{{ _id }}" href="/submissions/?fingerprint={{ fingerprint }}">recent submissions...</a>
 		</p>
-		<div id="recent_submissions_holder_{{ _id }}"></div>
 	</li>
 	{{/.}}
 </ul>
