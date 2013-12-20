@@ -19,8 +19,12 @@
 					Dropzone.options.importmediadropzone = {
 						previewTemplate : html,
 						maxFiles : 5,
-						acceptedFiles : 
-							["image/jpeg","video/x-matroska","text/plain"].join(",")
+						acceptedFiles : [
+								"image/jpeg",
+								"video/x-matroska",
+								"text/plain",
+								"application/zip"
+						].join(",")
 					};
 				}
 			});
