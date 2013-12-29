@@ -1,4 +1,4 @@
-<script>	
+<script>
 	var downloadOptions = (function() {	
 		$("#ic_submission_info").append(
 			$(document.createElement('div'))
@@ -24,14 +24,52 @@
 				)
 				.append(
 					$(document.createElement('a'))
-						.html("Download J3M Metadata")
+						.html("View J3M Metadata")
 						.attr({
 							'class':'ic_button',
-							'href': window.location.pathname + "j3m/",
-							'target' : '_blank',
-							'download' : window.location.pathname.split("/")[2] + ".j3m"
+							'href' : window.location.pathname + "#j3m"
 						})
-	
+						.css('margin-right', 6)
+				)
+				.append(
+					$(document.createElement('div'))
+						.css('display', 'inline')
+						.append(
+							$(document.createElement('a'))
+								.html("Download J3M As...")
+								.attr('class','ic_button')
+						)
+						.append(
+							$(document.createElement('ul'))
+								.attr('id', 'ic_download_options_holder')
+								.append([
+									$(document.createElement('li'))
+										.append(
+											$(document.createElement('a'))
+												.html('json')
+												.attr({
+													'href' : window.location.pathname + "j3m/",
+													'target' : '_blank',
+													'download' : window.location.pathname.split("/")[2] + ".json"
+												})
+										),
+									$(document.createElement('li'))
+										.append(
+											$(document.createElement('a'))
+												.html('csv')
+										),
+									$(document.createElement('li'))
+										.append(
+											$(document.createElement('a'))
+												.html('tsv')
+										),
+									$(document.createElement('li'))
+										.append(
+											$(document.createElement('a'))
+												.html('html')
+										)
+							])
+						)
 				)
 		);
 	});

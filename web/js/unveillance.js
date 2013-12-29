@@ -220,6 +220,10 @@ function killAuxPopup() {
 			doAdmin();
 		});
 		
+		this.get('#j3m', function(context) {
+			vizualizeJ3M();
+		});
+		
 		this.get('#annotate', function(context) {
 			doAnnotate();
 		});
