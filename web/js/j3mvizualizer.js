@@ -20,6 +20,17 @@ function vizualizeJ3M() {
 	});
 }
 
+function saveOriginal(el, f_name, url, mime_type) {
+	console.info(mime_type);
+	if(mime_type == "image/jpeg") {
+		f_name += ".jpg";
+	} else if(mime_type == "video/x-matroska") {
+		f_name += ".mkv";
+	}
+	
+	saveAsset(el, url, f_name);
+}
+
 function saveAsCSV(el, f_name) {
 	var blob = new Blob([toCSV(j3m_viewer.j3m)], {type : 'text/plain'});	
 	saveAsset(el, URL.createObjectURL(blob), f_name + ".csv");

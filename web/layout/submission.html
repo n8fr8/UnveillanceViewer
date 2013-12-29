@@ -9,7 +9,7 @@
 	<div id="ic_submission_info">
 		<div style="padding:6px">
 			<div class="ic_opts" id="ic_submission_opts_holder">
-				<a class="ic_button" href="/submission/{{ _id }}/media/orig/" target="_blank" download="{{ _id }}.jpg">Download Media</a>
+				<a class="ic_button" onclick="saveOriginal(this, '{{ _id }}', '/submission/{{ _id }}/media/orig/', '{{ mime_type }}');">Download Media</a>
 				<a class="ic_button" href="#j3m">View J3M Metadata</a>
 				<a class="ic_button" onclick="toggleElement('#ic_download_options_holder');">Download J3M As...</a>
 				<ul id="ic_download_options_holder" style="display:none;">
