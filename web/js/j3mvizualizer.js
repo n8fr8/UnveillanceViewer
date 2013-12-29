@@ -1,5 +1,4 @@
 function vizualizeJ3M() {
-	console.info("HELLO J3M");
 	$.ajax({
 		url : "/web/layout/static/j3m_vizualizer.html",
 		dataType : "html",
@@ -19,7 +18,29 @@ function vizualizeJ3M() {
 			}
 		}
 	});
-	console.info(j3m_viewer.j3m);
+}
+
+function saveAsCSV(el, f_name) {
+	var blob = new Blob([toCSV(j3m_viewer.j3m)], {type : 'text/plain'});	
+	saveAsset(el, URL.createObjectURL(blob), f_name + ".csv");
+}
+
+function saveAsTSV(el, f_name) {
+	var blob = new Blob([toTSV(j3m_viewer.j3m)], {type : 'text/plain'});	
+	saveAsset(el, URL.createObjectURL(blob), f_name + ".tsv");
+}
+
+function saveAsHTML(el, f_name) {
+	var blob = new Blob([toHTML(j3m_viewer.j3m)], {type : 'text/plain'});	
+	saveAsset(el, URL.createObjectURL(blob), f_name + ".html");
+}
+
+function saveAsset(el, url, f_name) {
+	$(el).attr({
+		'href' : url,
+		'download' : f_name,
+		'target' : '_blank'
+	});
 }
 
 /*******************/    
