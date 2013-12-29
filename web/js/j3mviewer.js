@@ -524,7 +524,7 @@ var J3MViewer = function() {
 	}
 	
 	this.parse = function(j3m) {
-		
+		j3m_viewer.j3m = j3m;
 		j3m_viewer.parseRawData(j3m);
 		
 		if(j3m.data.exif.location) {
