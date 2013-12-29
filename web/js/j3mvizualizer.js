@@ -6,6 +6,12 @@ function vizualizeJ3M() {
 		success: function(html) {
 			if(j3m_viewer != undefined && j3m_viewer != null) {
 				renderAuxContent(html);
+				
+				$("#aux_popup").css({
+					'width' : '58%',
+					'margin-top' : '1%'
+				});
+				
 				initTree({
 					d3DisplayName : "j3m : ",
 					children :convertToTree(j3m_viewer.j3m)

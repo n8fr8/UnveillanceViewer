@@ -101,7 +101,7 @@ function renderData(data) {
 }
 
 function renderJ3M(data) {
-	console.info(data);
+	//console.info(data);
 	j3m_viewer = new J3MViewer();
 	j3m_viewer.parse(data);
 }
