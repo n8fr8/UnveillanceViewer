@@ -1,39 +1,12 @@
-<script>	
+<script type="text/javascript" src="/web/js/angular.js"></script>
+<script type="text/javascript" src="/web/js/d3.js"></script>
+<script>
 	var downloadOptions = (function() {	
-		$("#ic_submission_info").append(
-			$(document.createElement('div'))
-				.css({
-					'padding' : '3px 0 20px 3px',
-					'margin' : 12,
-					'float': 'left',
-					'font-size' : '1.5em',
-					'text-align' : 'left',
-					'width' : '100%'
-				})
-				.attr('class', 'ic_opts')
-				.append(
-					$(document.createElement('a'))
-						.html("Download Media")
-						.attr({
-							'class':'ic_button',
-							'href' : window.location.pathname + "media/orig/",
-							'target' : '_blank',
-							'download' : window.location.pathname.split("/")[2] + ".jpg"
-						})
-						.css('margin-right', 6)
-				)
-				.append(
-					$(document.createElement('a'))
-						.html("Download J3M Metadata")
-						.attr({
-							'class':'ic_button',
-							'href': window.location.pathname + "j3m/",
-							'target' : '_blank',
-							'download' : window.location.pathname.split("/")[2] + ".j3m"
-						})
-	
-				)
-		);
+		var sibling = $($("#ic_download_options_holder").prev());
+		$("#ic_download_options_holder").css({
+			'width' : sibling.width(),
+			'left' : sibling.position().left
+		});	
 	});
 	
 	if(onDataLoaded.indexOf("downloadOptions") == -1) {

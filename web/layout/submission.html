@@ -8,6 +8,25 @@
 	
 	<div id="ic_submission_info">
 		<div style="padding:6px">
+			<div class="ic_opts" id="ic_submission_opts_holder">
+				<a class="ic_button" onclick="saveOriginal(this, '{{ _id }}', '/submission/{{ _id }}/media/orig/', '{{ mime_type }}');">Download Media</a>
+				<a class="ic_button" href="#j3m">View J3M Metadata</a>
+				<a class="ic_button" onclick="toggleElement('#ic_download_options_holder');">Download J3M As...</a>
+				<ul id="ic_download_options_holder" style="display:none;">
+					<li>
+						<a onclick="toggleElement('#ic_download_options_holder');" href="/submission/{{ _id }}/j3m/" target="_blank" download="{{ _id }}.json">json</a>
+					</li>
+					<li>
+						<a onclick="toggleElement('#ic_download_options_holder');saveAsCSV(this, '{{ _id }}');">csv</a>
+					</li>
+					<li>
+						<a onclick="toggleElement('#ic_download_options_holder'); saveAsTSV(this, '{{ _id }}');">tsv</a>
+					</li>
+					<li>
+						<a onclick="toggleElement('#ic_download_options_holder'); saveAsHTML(this, '{{ _id }}');">html</a>
+					</li>
+				</ul>
+			</div>
 			<div style="float:left;padding:3px;margin:12px">
 				<span class="ic_label">Admitted:</span> <span class="translatable ic_date">{{ date_admitted }}</span>
 			</div>
