@@ -1,6 +1,4 @@
 import requests, signal, sys, re, os, hashlib, base64, json, copy
-from Crypto.Cipher import AES
-from Crypto import Random
 
 import tornado.ioloop
 import tornado.web
@@ -8,101 +6,10 @@ import tornado.httpserver
 from mako.template import Template
 
 from conf import server_port, use_ssl, cert_file, key_file, auth_root, user_root, uurl, assets_path, cookie_tag, admin_cookie_tag, cookie_secret, no_access_cookie
+from funcs import createNewUser, getPrivateIV, getFileSalt, getPasswordSalt, encrypt, pad, unpad, decrypt
 
 def terminationHandler(signal, frame):
 	sys.exit(0)
-
-def createNewUser(username, password, as_admin=False):
-	try:
-		credentials = copy.deepcopy(credential_pack)
-		credentials['username'] = username
-		if as_admin:
-			credentials['admin'] = True
-			print "Creating %s as admin!" % username
-		
-		print credentials
-		"%s.txt" % hashlib.sha1(username + file_salt).hexdigest()
-		
-		try:
-			f = open(os.path.join(user_root, "%s.txt" % hashlib.sha1(username + file_salt).hexdigest()), 'rb')
-			f.close()
-			return False
-		except IOError as e:
-			print "THIS IS A GOOD ERROR! %s" % e
-			pass
-		
-		f = open(os.path.join(user_root, "%s.txt" % hashlib.sha1(username + file_salt).hexdigest()), 'wb+')
-		f.write(encrypt(credentials, password, p_salt=password_salt, iv=private_iv))
-		f.close()
-		return True
-	except:
-		print "but something went wrong?"
-		return False
-
-def encrypt(plaintext, password, iv=None, p_salt=None):
-	if p_salt is not None:
-		password = password + p_salt
-		
-	if iv is None:
-		iv = Random.new().read(AES.block_size)
-	else:
-		iv = iv.decode('hex')
-			
-	aes = AES.new(
-		hashlib.md5(password).hexdigest(), 
-		AES.MODE_CBC,
-		iv
-	)
-	
-	ciphertext = {
-		'iv' : iv.encode('hex'),
-		'data' : aes.encrypt(pad(json.dumps(plaintext))).encode('hex')
-	}
-	
-	return base64.b64encode(json.dumps(ciphertext))
-
-def pad(plaintext):
-	pad = len(plaintext) % AES.block_size
-	
-	if pad != 0:
-		pad_from = len(plaintext) - pad
-		pad_size = (pad_from + AES.block_size) - len(plaintext)
-		plaintext = "".join(["*" for x in xrange(pad_size)]) + plaintext
-	
-	return plaintext
-
-def unpad(plaintext):
-	return plaintext[plaintext.index("{"):]
-	
-def decrypt(ciphertext, password, iv=None, p_salt=None):
-	try:
-		ct_json = json.loads(base64.b64decode(ciphertext))
-		print ct_json
-		
-		ciphertext = ct_json['data'].decode('hex')
-
-		if p_salt is not None:
-			password = password + p_salt
-		if iv is None:
-			iv = ct_json['iv'].decode('hex')
-		else:
-			private_iv.decode('hex')
-
-		aes = AES.new(
-			hashlib.md5(password).hexdigest(),
-			AES.MODE_CBC,
-			iv
-		)
-		
-		cookie_data = json.loads(unpad(aes.decrypt(ciphertext)))
-		if cookie_data['username']:
-			return cookie_data
-	except KeyError as e:
-		print e
-	except ValueError as e:
-		print e
-		
-	return None	
 
 def getStatus(req):
 	# if you have a NO_ACCESS cookie, well, that's too bad
@@ -122,6 +29,25 @@ def getStatus(req):
 		return 2
 
 	return 1
+
+def getDefaultHome(req):
+	user = req.get_secure_cookie(cookie_tag)
+	if user is not None:
+		user = json.loads(base64.b64decode(user))
+		try:
+			return user['default_home']
+		except KeyError as e:
+			print e
+			pass
+	
+	try:
+		from conf import default_home
+		return default_home
+	except ImportError as e:
+		print e
+		pass
+	
+	return "submissions"
 
 def checkForAdminParty():
 	for root_, dir_, files in os.walk(user_root):
@@ -238,8 +164,8 @@ class RouteHandler(tornado.web.RequestHandler):
 		
 		if route is not None:
 			url = "%s%s" % (uurl, route)
-		else:
-			url = "%ssubmissions/" % uurl
+		else:				
+			url = "%s%s/" % (uurl, getDefaultHome(self))
 			
 		print url	
 		format = None
@@ -395,7 +321,7 @@ class LoginHandler(tornado.web.RequestHandler):
 			return
 		
 		#createNewUser(username, password)
-		auth = "%s.txt" % hashlib.sha1(username + file_salt).hexdigest()
+		auth = "%s.txt" % hashlib.sha1(username + getFileSalt()).hexdigest()
 		
 		# if this file exists,
 		try:
@@ -404,7 +330,7 @@ class LoginHandler(tornado.web.RequestHandler):
 			f.close()
 			
 			# decrypt it using supplied password.
-			plaintext = decrypt(ciphertext, password, p_salt=password_salt)			
+			plaintext = decrypt(ciphertext, password, p_salt=getPasswordSalt())			
 			
 			# if that works, send back plaintext
 			if plaintext is not None:
@@ -441,26 +367,27 @@ class LogoutHandler(tornado.web.RequestHandler):
 			try:			
 				credentials = json.loads(self.request.body)
 				
-				auth = "%s.txt" % hashlib.sha1(credentials['user']['username'] + file_salt).hexdigest()
+				auth = "%s.txt" % hashlib.sha1(credentials['user']['username'] + getFileSalt()).hexdigest()
 				
 				f = open(os.path.join(user_root, auth), 'rb')
 				ciphertext = f.read()
 				f.close()
 			
 				# decrypt it using supplied password.
-				plaintext = decrypt(ciphertext, credentials['password'], p_salt=password_salt)
+				plaintext = decrypt(ciphertext, credentials['password'], p_salt=getPasswordSalt())
 			
 				# if that works, encrypt new data
 				if plaintext is not None:
 					new_data = copy.deepcopy(plaintext)
 					new_data['saved_searches'] = credentials['user']['saved_searches']
+					# also, new_data might have ['default_home']
 					
 					f = open(os.path.join(user_root, auth), 'wb+')
 					f.write(encrypt(
 						new_data, 
 						credentials['password'],
-						iv=private_iv,
-						p_salt=password_salt
+						iv=getPrivateIV(),
+						p_salt=getPasswordSalt()
 					))
 					f.close()
 				else:
@@ -539,24 +466,6 @@ class UserHandler(tornado.web.RequestHandler):
 static_path = os.path.join(os.path.dirname(__file__), "web")
 main_layout = Template(filename="%s/index.html" % static_path)
 media_routes = ["j3m", "media"]
-
-f = open(os.path.join(auth_root, "file_salt.txt"))
-file_salt = f.read().strip()
-f.close()
-
-f = open(os.path.join(auth_root, "password_salt.txt"))
-password_salt = f.read().strip()
-f.close()
-
-f = open(os.path.join(auth_root, "iv.txt"))
-private_iv = f.read().strip()
-f.close()
-
-credential_pack = {
-	"username" : "",
-	"saved_searches" : [],
-	"session_log" : []
-}
 
 routes = [
 	(r"/([^web/|login/|logout/|ping/|leaflet/|upanel/|import/][a-zA-Z0-9/]*/$)?", RouteHandler, dict(route=None)),

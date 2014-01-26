@@ -1,4 +1,5 @@
 uurl = "http://localhost:8080/"
+default_home = "submissions"
 use_ssl = False
 auth_root = "auth/"
 user_root = "/another/folder/where/you/store/user/data/"	# MUST BE EMPTY!
