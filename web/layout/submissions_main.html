@@ -1,0 +1,21 @@
+<script>
+	var points = new Array();
+</script>
+
+{{#.}}
+<script>
+	var searchResult = new Object();
+	searchResult.location = [{{ data.exif.location }}];
+	searchResult.id = "{{ _id }}";
+	points.push(searchResult);
+</script>
+{{/.}}
+
+<h2>Recent Submissions</h2>
+<div id="map" class="ic_content_holder"></div>
+
+${ extras }
+
+<script>	
+	renderJ3MMap(points);
+</script>

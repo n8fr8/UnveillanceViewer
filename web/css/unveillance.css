@@ -59,6 +59,10 @@ body {
 	padding:0px;
 }
 
+#content .ic_collection_holder {
+
+}
+
 #media {
 	background:#555555;
 	text-align:center;
@@ -350,6 +354,16 @@ input, select {
 	float:left;
 	padding: 4px;
 	margin:0 6px;
+}
+
+#content ul li.ic_collection_holder div.ic_collection_preview ul {
+	min-height:100px;
+}
+
+#content ul li.ic_collection_holder div.ic_collection_preview ul li {
+	float:left;
+	margin:0;
+	padding:0;
 }
 
 ul.ic_panel_ul {

@@ -241,6 +241,8 @@ class RouteHandler(tornado.web.RequestHandler):
 					layout = "main_public"
 				else:
 					layout = "main"
+				
+				layout = "%s_%s" % (getDefaultHome(self), layout)
 
 			if status == 2 or status == 3:
 				auth_layout = "logout_ctrl"

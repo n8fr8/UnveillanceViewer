@@ -87,7 +87,7 @@ function renderUi(data) {
 function renderData(data) {
 	u_user = new User();
 	if(data.result == 200) {
-		//console.info(data.data);
+		console.info(data.data);
 		renderUi(data.data);
 	} else {
 		$.ajax({
