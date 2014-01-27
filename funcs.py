@@ -38,11 +38,13 @@ def createNewUser(username, password, as_admin=False):
 			print "Creating %s as admin!" % username
 		
 		print credentials
-		"%s.txt" % hashlib.sha1(username + getFileSalt()).hexdigest()
+		user_path = os.path.join(user_root, "%s.txt" % hashlib.sha1(username + getFileSalt()).hexdigest())
+		print user_path
 		
 		try:
-			f = open(os.path.join(user_root, "%s.txt" % hashlib.sha1(username + getFileSalt()).hexdigest()), 'rb')
+			f = open(user_path, 'rb')
 			f.close()
+			print "we already have this one... hmmm..."
 			return False
 		except IOError as e:
 			print "THIS IS A GOOD ERROR! %s" % e

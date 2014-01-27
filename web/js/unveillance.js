@@ -64,6 +64,11 @@ function translate(el) {
 			$(item).empty();
 			$(item).append(term_holder);
 		}
+		
+		if($(item).hasClass('ic_countable')) {
+			var el = $("#" + $(item).attr('rel'));
+			$(item).html(el.children().length);
+		}
 	});
 }
 

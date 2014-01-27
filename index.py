@@ -274,6 +274,8 @@ class RouteHandler(tornado.web.RequestHandler):
 			extra_scripts.extend(self.getExtraScriptsByStatus(status, route))
 						
 			data = json.loads(r.text.replace(assets_path, ""))
+			print data
+			
 			self.finish(main_layout.render(
 				template_content=tmpl.render(extras="".join(tmpl_extras)),
 				authentication_holder=authentication_holder,
@@ -282,7 +284,6 @@ class RouteHandler(tornado.web.RequestHandler):
 				authentication_ctrl=authentication_ctrl,
 				data=json.dumps(data)
 			))
-			print extra_scripts
 
 class LeafletHandler(tornado.web.RequestHandler):
 	def initialize(self, route):
