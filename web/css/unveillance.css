@@ -366,6 +366,15 @@ input, select {
 	padding:0;
 }
 
+span.inline_list_horizontal {
+	display:inline;
+}
+
+span.inline_list_horizontal ul li {
+	float:left;
+	font-size:0.8em;
+}
+
 ul.ic_panel_ul {
 	list-style-type:none;
 	margin:0;

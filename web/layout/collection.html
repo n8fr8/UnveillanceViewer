@@ -1,0 +1,51 @@
+<h2>Collection {{ _id }}</h2>
+<div id="ic_collection_holder" class="ic_content_holder">
+	<div id="map">
+		<div id="map1" class="ic_map_box" style="float:left;"></div>
+		<div id="map2" class="ic_map_box"></div>
+	</div>
+	
+	<div id="ic_submission_info">
+		<div style="padding:6px;">
+			<div class="ic_opts" id="ic_collection_opts_holder">
+				<a class="ic_button">Reset Map</a>
+				<a class="ic_button" onclick="toggleElement('#ic_download_options_holder');">Export Collection As...</a>
+				<ul id="ic_download_options_holder" style="display:none;">
+					<li><a>json</a></li>
+					<li><a>csv</a></li>
+					<li><a>tsv</a></li>
+					<li><a>html</a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<h3>Attached Media</h3>
+	<div class="ic_collection_preview">
+		<ul id="ic_collection_preview_{{ _id }}">
+			{{#attached_media}}
+			<li>
+				<a href="/submission/{{ . }}/">
+					<img src="/submission/{{ . }}/media/thumb/" />
+				</a>
+			</li>
+			{{/attached_media}}
+		</ul>
+	</div>
+	
+	<h3>Contributors</h3>
+	<div>
+		<ul>
+			{{ #contributors }}
+			<li><a href="/sources/?fingerprint={{ . }}/">{{ . }}</a></li>
+			{{ /contributors}}
+		</ul>
+	</div>
+	
+	<h3>User-Appended Data</h3>
+	
+	<h3>Light Meter, Pressure &amp; Temperature</h3>
+	
+	<h3>Pitch, Roll &amp; Azimuth</h3>
+	
+	<h3>Accelerometer (X,Y,Z)</h3>
+</div>
