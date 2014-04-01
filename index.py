@@ -7,6 +7,7 @@ from mako.template import Template
 
 from conf import server_port, use_ssl, cert_file, key_file, auth_root, user_root, uurl, assets_path, cookie_tag, admin_cookie_tag, cookie_secret, no_access_cookie
 from funcs import createNewUser, getPrivateIV, getFileSalt, getPasswordSalt, encrypt, pad, unpad, decrypt
+import urlparse, urllib
 
 def terminationHandler(signal, frame):
 	sys.exit(0)
@@ -60,7 +61,7 @@ class PingHandler(tornado.web.RequestHandler):
 	@tornado.web.asynchronous
 	def get(self):
 		try:
-			r = requests.get(uurl)	
+			r = requests.get(uurl)
 			self.write(r.text)
 		except requests.exceptions.ConnectionError as e:
 			print e
@@ -70,17 +71,16 @@ class PingHandler(tornado.web.RequestHandler):
 
 class RouteHandler(tornado.web.RequestHandler):
 	@tornado.web.asynchronous
-	def validateUnprivilegedQuery(self, q_string):
-		if q_string == "":
+	def validateUnprivilegedQuery(self, q_list):
+		if not q_list:
 			return True
 			
 		allowed_queries = ["public_hash", "get_all", "capturedOn"]
 		
-		for kvp in q_string[1:].split("&"):
-			key_val = kvp.split("=")
-			if key_val[0] not in allowed_queries:
+		for k, _ in q_list:
+			if k not in allowed_queries:
 				return False
-				
+
 		return True
 		
 	def getExtraScriptsByStatus(self, status, route):
@@ -114,10 +114,10 @@ class RouteHandler(tornado.web.RequestHandler):
 					filename="%s/layout/opts/j3mviewer_user.html" % static_path
 				).render())
 			
-			# no annotations for now please	
-			#	extra_tmpls.append(Template(
-			#		filename="%s/layout/opts/annotate_submission.html" % static_path
-			#	).render())
+			# no annotations for now please
+			#   extra_tmpls.append(Template(
+			#	   filename="%s/layout/opts/annotate_submission.html" % static_path
+			#   ).render())
 			
 			if as_search_result:
 				extra_tmpls.append(Template(
@@ -126,12 +126,13 @@ class RouteHandler(tornado.web.RequestHandler):
 		
 		return extra_tmpls
 	
-	def initialize(self, route):
-		self.route = route
 
 	def get(self, route):
 		auth_layout = None
-		q_string = self.request.query
+		# format query string
+		q_list = urlparse.parse_qsl(self.request.query, keep_blank_values=True)
+		q_string = urllib.urlencode(q_list)
+
 		extra_scripts = []
 		
 		status = getStatus(self)
@@ -164,47 +165,28 @@ class RouteHandler(tornado.web.RequestHandler):
 		
 		if route is not None:
 			url = "%s%s" % (uurl, route)
-		else:				
+		else:
 			url = "%s%s/" % (uurl, getDefaultHome(self))
 			
-		print url	
-		format = None
+		print url
+		format = self.get_query_argument("format", default=None)
 		as_search_result = False
 		
-		if q_string != "":
-			for kvp in self.request.query.split("&"):
-				key_val = kvp.split("=")
-				if key_val[0] == "format":
-					format = key_val[1]
-					q_string = q_string.replace("format=%s" % key_val[1], "")
-					break
+		if format is not None:
+			q_list = filter(lambda kvp: kvp[0] != "format", q_list)
+			q_string = urllib.urlencode(q_list)
+
+		if q_string:
+			as_search_result = True
 		
-			if not q_string.startswith("?"):
-				q_string = "?%s" % q_string
-			
-			if re.search(r'&&', q_string):
-				q_string = q_string.replace("&&","&")
-			
-			if re.search(r'.*&$', q_string):
-				q_string = q_string[:-1]
-			
-			if re.search(r'^\?&.*', q_string):
-				q_string = q_string.replace("?&","?")
-			
-			if q_string == "?":
-				q_string = ""
-			
-			if q_string != "":
-				as_search_result = True
-		
-		if status == 0 and not self.validateUnprivilegedQuery(q_string):
-			print self.validateUnprivilegedQuery(q_string)
+		if status == 0 and not self.validateUnprivilegedQuery(q_list):
+			print self.validateUnprivilegedQuery(q_list)
 			self.redirect('/')
 			return
 		
-		print "%s%s" % (url, q_string)
+		print "%s?%s" % (url, q_string)
 		try:
-			r = requests.get("%s%s" % (url, q_string))
+			r = requests.get("%s?%s" % (url, q_string))
 		except requests.exceptions.ConnectionError as e:
 			error_tmpl = Template(filename="%s/layout/errors/error_no_api.html" % static_path)
 			self.finish(main_layout.render(
@@ -274,7 +256,7 @@ class RouteHandler(tornado.web.RequestHandler):
 			extra_scripts.extend(self.getExtraScriptsByStatus(status, route))
 						
 			data = json.loads(r.text.replace(assets_path, ""))
-			print data
+			#print data
 			
 			self.finish(main_layout.render(
 				template_content=tmpl.render(extras="".join(tmpl_extras)),
@@ -286,16 +268,12 @@ class RouteHandler(tornado.web.RequestHandler):
 			))
 
 class LeafletHandler(tornado.web.RequestHandler):
-	def initialize(self, route):
-		self.route = route
 	
 	def get(self, route):
 		r = requests.get("http://cdn.leafletjs.com/leaflet-0.6.4/%s" % route)
 		self.finish(r.content)
 
 class EaselHandler(tornado.web.RequestHandler):
-	def initialize(self, route):
-		self.route = route
 	
 	def get(self, route):
 		r = requests.get("http://code.createjs.com/%s" % route)
@@ -333,7 +311,7 @@ class LoginHandler(tornado.web.RequestHandler):
 			f.close()
 			
 			# decrypt it using supplied password.
-			plaintext = decrypt(ciphertext, password, p_salt=getPasswordSalt())			
+			plaintext = decrypt(ciphertext, password, p_salt=getPasswordSalt())
 			
 			# if that works, send back plaintext
 			if plaintext is not None:
@@ -366,7 +344,7 @@ class LogoutHandler(tornado.web.RequestHandler):
 		self.clear_cookie(cookie_tag)
 		self.clear_cookie(admin_cookie_tag)
 		
-		if self.request.body != "":		
+		if self.request.body != "":
 			try:			
 				credentials = json.loads(self.request.body)
 				
@@ -387,7 +365,7 @@ class LogoutHandler(tornado.web.RequestHandler):
 					
 					f = open(os.path.join(user_root, auth), 'wb+')
 					f.write(encrypt(
-						new_data, 
+						new_data,
 						credentials['password'],
 						iv=getPrivateIV(),
 						p_salt=getPasswordSalt()
@@ -433,7 +411,7 @@ class ImportHandler(tornado.web.RequestHandler):
 		self.finish({'ok':False})
 
 class UserHandler(tornado.web.RequestHandler):
-	def post(self):		
+	def post(self):
 		status = getStatus(self)
 		if status != 3:
 			if not checkForAdminParty() and status == 1:
@@ -471,23 +449,23 @@ main_layout = Template(filename="%s/index.html" % static_path)
 media_routes = ["j3m", "media"]
 
 routes = [
-	(r"/([^web/|login/|logout/|ping/|leaflet/|upanel/|import/][a-zA-Z0-9/]*/$)?", RouteHandler, dict(route=None)),
 	(r"/web/([a-zA-Z0-9\-/\._]+)", tornado.web.StaticFileHandler, {"path" : static_path }),
-	(r"/leaflet/(.*)", LeafletHandler, dict(route=None)),
-	(r"/easel/(.*)", EaselHandler, dict(route=None)),
+	(r"/leaflet/(.*)", LeafletHandler),
+	(r"/easel/(.*)", EaselHandler),
 	(r"/login/", LoginHandler),
 	(r"/logout/", LogoutHandler),
 	(r"/upanel/", UserHandler),
 	(r"/import/", ImportHandler),
-	(r"/ping/", PingHandler)
+	(r"/ping/", PingHandler),
+	(r"/([a-zA-Z0-9/]*/$)?", RouteHandler),
 ]
 
 app = tornado.web.Application(routes, **{'cookie_secret':cookie_secret})
 signal.signal(signal.SIGINT, terminationHandler)
 
-if __name__ == "__main__":	
+if __name__ == "__main__":
 	if (use_ssl == False):
-	  	app.listen(server_port)
+		app.listen(server_port)
 	else:
 		server = tornado.httpserver.HTTPServer(app, ssl_options={
 			'certfile' : os.path.join(auth_root, cert_file),
