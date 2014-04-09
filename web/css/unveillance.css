@@ -121,6 +121,10 @@ body {
 	display:none;
 }
 
+#aux_popup form {
+	margin-bottom: 0px;
+}
+
 #admin_advanced_search_holder {
 	display:none;
 }

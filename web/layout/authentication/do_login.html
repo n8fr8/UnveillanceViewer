@@ -1,5 +1,21 @@
+<h3>Login <a class="ic_exit" rel="aux_popup">[x]</a></h3>
+<form id="login-form">
+	<p>Username: <input type="text" id="ic_username" /></p>
+	<p>Password: <input type="password" id="ic_password" /></p>
+	<div class="ic_error" id="ic_bad_login_holder">
+		<p>Sorry, we could not log you in.  Please try again!</p>
+	</div>
+	<input type="submit" class="ic_button ic_note_bene"
+		style="margin-left:10px;" value="Submit"/>
+</form>
+
+
 <script>
-	function doLogin() {
+$(document).ready(function() {
+	setTimeout(function() {$('#ic_username').focus();}, 10);
+
+	var form = $('#login-form');
+	form.submit(function (ev) {
 		$.ajax({
 			url : "/login/",
 			dataType: "json",
@@ -18,13 +34,8 @@
 				}
 			}
 		});
-	}
-</script>
 
-<h3>Login <a class="ic_exit" rel="aux_popup">[x]</a></h3>
-<p>Username: <input type="text" id="ic_username" /></p>
-<p>Password: <input type="password" id="ic_password" /></p>
-<div class="ic_error" id="ic_bad_login_holder">
-	<p>Sorry, we could not log you in.  Please try again!</p>
-</div>
-<a onclick="doLogin();" class="ic_button ic_note_bene" style="margin-left:10px;">Submit</a>
+		ev.preventDefault();
+	});
+});
+</script>
