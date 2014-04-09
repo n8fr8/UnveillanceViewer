@@ -27,15 +27,22 @@ $(document).ready(function() {
 			success: function(json) {
 				if(json.ok) {
 					localStorage.setItem('user', JSON.stringify(json.user));
-					window.history.back();
-					window.location.reload();
+					var next = getParameterByName('next');
+					window.location = next ? next : '/';
 				} else {
 					$("#ic_bad_login_holder").css('display','block');
 				}
 			}
 		});
 
-		ev.preventDefault();
+		return false;
 	});
 });
+
+function getParameterByName(name) {
+    name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+        results = regex.exec(location.search);
+    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+}
 </script>

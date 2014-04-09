@@ -56,8 +56,7 @@ var User = function() {
 			success: function(json) {
 				u_user = null;
 				localStorage.clear();
-				window.history.back();
-				window.location.reload();
+				window.location = '/';
 			}
 		});
 	}

@@ -9,6 +9,16 @@ from conf import server_port, use_ssl, cert_file, key_file, auth_root, user_root
 from funcs import createNewUser, getPrivateIV, getFileSalt, getPasswordSalt, encrypt, pad, unpad, decrypt
 import urlparse, urllib
 
+class BaseHandler(tornado.web.RequestHandler):
+    def get_current_user(self):
+    	status = getStatus(self)
+    	if status == 2 or status == 3:
+    		cookie = self.get_secure_cookie(cookie_tag)
+    		return json.loads(base64.b64decode(cookie))['username']
+    	if status == 0:
+    		return '$PUBLIC_USER' # TODO
+    	return None
+
 def terminationHandler(signal, frame):
 	sys.exit(0)
 
@@ -69,7 +79,7 @@ class PingHandler(tornado.web.RequestHandler):
 		
 		self.finish()
 
-class RouteHandler(tornado.web.RequestHandler):
+class RouteHandler(BaseHandler):
 	@tornado.web.asynchronous
 	def validateUnprivilegedQuery(self, q_list):
 		if not q_list:
@@ -127,7 +137,9 @@ class RouteHandler(tornado.web.RequestHandler):
 		return extra_tmpls
 	
 
+	@tornado.web.authenticated
 	def get(self, route):
+		print 'USER: ' + self.current_user
 		auth_layout = None
 		# format query string
 		q_list = urlparse.parse_qsl(self.request.query, keep_blank_values=True)
@@ -136,32 +148,7 @@ class RouteHandler(tornado.web.RequestHandler):
 		extra_scripts = []
 		
 		status = getStatus(self)
-		if status == 1:
-			auth_layout = Template(filename="%s/layout/authentication/login_ctrl.html" % static_path).render()
-			
-			# first, let's see if you have any user files
-			if checkForAdminParty():
-				auth_stopgap = Template(
-					filename="%s/layout/authentication/admin_party.html" % static_path
-				).render()
-			else:
-				auth_stopgap = Template(
-					filename="%s/layout/errors/error_not_logged_in.html" % static_path
-				).render()
-			
-			extra_scripts = Template(
-				filename="%s/layout/authentication/disable_user.html" % static_path
-			).render()
-			
-			self.finish(main_layout.render(
-				template_content=auth_stopgap,
-				authentication_holder='',
-				search_ctrl='',
-				extra_scripts=extra_scripts,
-				authentication_ctrl=auth_layout,
-				data=''
-			))
-			return
+
 		
 		if route is not None:
 			url = "%s%s" % (uurl, route)
@@ -279,25 +266,44 @@ class EaselHandler(tornado.web.RequestHandler):
 		r = requests.get("http://code.createjs.com/%s" % route)
 		self.finish(r.content)
 
-class LoginHandler(tornado.web.RequestHandler):
+class LoginHandler(BaseHandler):
+	@tornado.web.asynchronous
+	def get(self):
+		auth_layout = Template(filename="%s/layout/authentication/login_ctrl.html" % static_path).render()
+		
+		# first, let's see if you have any user files
+		if checkForAdminParty():
+			auth_stopgap = Template(
+				filename="%s/layout/authentication/admin_party.html" % static_path
+			).render()
+		else:
+			auth_stopgap = Template(
+				filename="%s/layout/errors/error_not_logged_in.html" % static_path
+			).render()
+		
+		extra_scripts = Template(
+			filename="%s/layout/authentication/disable_user.html" % static_path
+		).render()
+		
+		self.finish(main_layout.render(
+			template_content=auth_stopgap,
+			authentication_holder='',
+			search_ctrl='',
+			extra_scripts=extra_scripts,
+			authentication_ctrl=auth_layout,
+			data=''
+		))
+
 	@tornado.web.asynchronous
 	def post(self):
 		if getStatus(self) == 0:
 			self.finish({'ok':False})
 			return
 		
-		username = None
-		password = None
-		
-		credentials = self.request.body
-		for kvp in credentials.split("&"):
-			kv = kvp.split("=")
-			if kv[0] == "username":
-				username = kv[1]
-			elif kv[0] == "password":
-				password = kv[1]
-		
-		if username is "" or password is "" or username is None or password is None:
+		username = self.get_argument('username', default='').encode('utf-8')
+		password = self.get_argument('password', default='').encode('utf-8')
+
+		if username is "" or password is "":
 			self.finish({'ok':False})
 			return
 		
@@ -418,22 +424,14 @@ class UserHandler(tornado.web.RequestHandler):
 				self.finish({'ok':False})
 				return
 		
-		username = None
-		password = None
-		
-		credentials = self.request.body
-		for kvp in credentials.split("&"):
-			kv = kvp.split("=")
-			if kv[0] == "username":
-				username = kv[1]
-			elif kv[0] == "password":
-				password = kv[1]
-		
-		if username is "" or password is "" or username is None or password is None:
+		username = self.get_argument('username', default='').encode('utf-8')
+		password = self.get_argument('password', default='').encode('utf-8')
+
+		if username is "" or password is "":
 			self.finish({'ok':False})
 			return
 			
-		if not re.match(r'[a-zA-Z0-9_\-]', username):
+		if not re.match(r'[a-zA-Z0-9_\-]+$', username):
 			print "THIS DOES NOT MATCH THE SPEC!"
 			self.finish({'ok':False})
 			return
@@ -460,7 +458,13 @@ routes = [
 	(r"/([a-zA-Z0-9/]*/$)?", RouteHandler),
 ]
 
-app = tornado.web.Application(routes, **{'cookie_secret':cookie_secret})
+settings = {
+	'cookie_secret': cookie_secret,
+	'login_url': '/login/',
+	#'xsrf_cookies': True # TODO support xsrf cookies
+}
+
+app = tornado.web.Application(routes, **settings)
 signal.signal(signal.SIGINT, terminationHandler)
 
 if __name__ == "__main__":

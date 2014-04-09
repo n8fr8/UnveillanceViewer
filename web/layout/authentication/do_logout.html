@@ -9,8 +9,7 @@
 					if(json.ok) {
 						localStorage.clear();
 						u_user = null;
-						window.history.back();
-						window.location.reload();
+						window.location = '/';
 					} else {
 						$("#ic_bad_logout_holder").css('display','block');
 					}
