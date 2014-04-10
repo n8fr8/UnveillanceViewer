@@ -139,7 +139,9 @@ class RouteHandler(BaseHandler):
 
 	@tornado.web.authenticated
 	def get(self, route):
-		print 'USER: ' + self.current_user
+		# sets xsrf cookie
+		self.xsrf_token
+
 		auth_layout = None
 		# format query string
 		q_list = urlparse.parse_qsl(self.request.query, keep_blank_values=True)
@@ -269,6 +271,9 @@ class EaselHandler(tornado.web.RequestHandler):
 class LoginHandler(BaseHandler):
 	@tornado.web.asynchronous
 	def get(self):
+		# sets xsrf cookie
+		self.xsrf_token
+
 		auth_layout = Template(filename="%s/layout/authentication/login_ctrl.html" % static_path).render()
 		
 		# first, let's see if you have any user files
@@ -303,7 +308,7 @@ class LoginHandler(BaseHandler):
 		username = self.get_argument('username', default='').encode('utf-8')
 		password = self.get_argument('password', default='').encode('utf-8')
 
-		if username is "" or password is "":
+		if not username or not password:
 			self.finish({'ok':False})
 			return
 		
@@ -427,7 +432,7 @@ class UserHandler(tornado.web.RequestHandler):
 		username = self.get_argument('username', default='').encode('utf-8')
 		password = self.get_argument('password', default='').encode('utf-8')
 
-		if username is "" or password is "":
+		if len(username) < 4 or len(password) < 6:
 			self.finish({'ok':False})
 			return
 			
@@ -439,7 +444,7 @@ class UserHandler(tornado.web.RequestHandler):
 		if createNewUser(username, password, as_admin=checkForAdminParty()):
 			self.finish({'ok' : True})
 			return
-		
+
 		self.finish({'ok':False})
 
 static_path = os.path.join(os.path.dirname(__file__), "web")
@@ -461,7 +466,7 @@ routes = [
 settings = {
 	'cookie_secret': cookie_secret,
 	'login_url': '/login/',
-	#'xsrf_cookies': True # TODO support xsrf cookies
+	'xsrf_cookies': True
 }
 
 app = tornado.web.Application(routes, **settings)

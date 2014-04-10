@@ -24,7 +24,8 @@ function addNewUser(callback) {
 		type: "POST",
 		data: {
 			username: $("#ic_username").val(),
-			password: $("#ic_password").val()
+			password: $("#ic_password").val(),
+			_xsrf: getCookie("_xsrf")
 		},
 		success: function(json) {
 			if(json.ok) {

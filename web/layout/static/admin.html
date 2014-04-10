@@ -19,6 +19,7 @@
 					Dropzone.options.importmediadropzone = {
 						previewTemplate : html,
 						maxFiles : 5,
+						headers: { 'X-XSRFToken': getCookie("_xsrf") },
 						acceptedFiles : [
 								"image/jpeg",
 								"video/x-matroska",

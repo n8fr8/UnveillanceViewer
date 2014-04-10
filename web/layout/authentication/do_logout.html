@@ -5,6 +5,9 @@
 				url : "/logout/",
 				type: "POST",
 				dataType: "json",
+				headers: {
+					'X-XSRFToken': getCookie("_xsrf")
+				},
 				success: function(json) {
 					if(json.ok) {
 						localStorage.clear();
