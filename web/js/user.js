@@ -51,13 +51,15 @@ var User = function() {
 		$.ajax({
 			url : "/logout/",
 			type: "POST",
+			headers: {
+				'X-XSRFToken': getCookie("_xsrf")
+			},
 			data: JSON.stringify(data),
 			dataType: "json",
 			success: function(json) {
 				u_user = null;
 				localStorage.clear();
-				window.history.back();
-				window.location.reload();
+				window.location = '/';
 			}
 		});
 	}

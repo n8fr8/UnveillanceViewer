@@ -161,6 +161,11 @@ function killAuxPopup() {
 	window.history.back();
 }
 
+function getCookie(name) {
+    var r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
+    return r ? r[1] : null;
+}
+
 (function($) {
 	var app = $.sammy('#aux_popup_holder', function() {
 		this.get('#login', function(context) {
