@@ -1,0 +1,26 @@
+<script>
+	var initMedia = (function() {
+		$("#ic_j3m_holder").prepend(
+			$(document.createElement('div'))
+				.attr('id', "media")
+				.append(
+					$(document.createElement('canvas'))
+						.attr('id', "media_image")
+						.prop({
+							'width' : 1000,
+							'height' : 600
+						})
+				)
+		);
+	});
+	
+	function parseMedia() {
+		media_browser = new MediaBrowser();
+		media_browser.init();
+	}
+	
+	if(onDataLoaded.indexOf("initMedia") == -1) {
+		onDataLoaded.push("initMedia");
+		initMedia();
+	}
+</script>

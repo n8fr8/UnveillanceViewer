@@ -1,0 +1,27 @@
+<h2>Recent Collections</h2>
+<ul class="ic_content_holder">
+	{{#.}}
+	<li class="ic_collection_holder">
+		<p>
+			<span class="ic_label">Date Created:</span> <span class="translatable ic_date">{{ dateCreated }}</span><br />
+			<span class="ic_label">Date Admitted:</span> <span class="translatable ic_date">{{ date_admitted }}</span><br />
+			<span class="ic_label">Contributors:</span> 
+			{{#contributors}}
+			<span>{{ . }}</span> 
+			{{/contributors}}
+			<br />
+		</p>
+		<p><span class="ic_label">Num. Media:</span> <span rel="ic_collection_preview_{{ _id }}" class="translatable ic_countable"></p>
+		<div class="ic_collection_preview">
+			<ul id="ic_collection_preview_{{ _id }}">
+				{{#attached_media}}
+				<li><img src="/submission/{{ . }}/media/thumb/" /></li>
+				{{/attached_media}}
+			</ul>
+		</div>
+		<p><a href="/collection/{{ _id }}/" class="ic_button">More...</a></p>
+	</li>
+	{{/.}}
+</ul>
+
+${ extras }

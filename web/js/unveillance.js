@@ -64,6 +64,11 @@ function translate(el) {
 			$(item).empty();
 			$(item).append(term_holder);
 		}
+		
+		if($(item).hasClass('ic_countable')) {
+			var el = $("#" + $(item).attr('rel'));
+			$(item).html(el.children().length);
+		}
 	});
 }
 
@@ -87,7 +92,7 @@ function renderUi(data) {
 function renderData(data) {
 	u_user = new User();
 	if(data.result == 200) {
-		//console.info(data.data);
+		console.info(data.data);
 		renderUi(data.data);
 	} else {
 		$.ajax({
@@ -101,7 +106,7 @@ function renderData(data) {
 }
 
 function renderJ3M(data) {
-	console.info(data);
+	//console.info(data);
 	j3m_viewer = new J3MViewer();
 	j3m_viewer.parse(data);
 }
@@ -154,6 +159,11 @@ function killAuxPopup() {
 		'margin-top' : '15%'
 	});
 	window.history.back();
+}
+
+function getCookie(name) {
+    var r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
+    return r ? r[1] : null;
 }
 
 (function($) {
@@ -218,6 +228,10 @@ function killAuxPopup() {
 		
 		this.get('#admin', function(context) {
 			doAdmin();
+		});
+		
+		this.get('#j3m', function(context) {
+			vizualizeJ3M();
 		});
 		
 		this.get('#annotate', function(context) {

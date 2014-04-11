@@ -524,7 +524,7 @@ var J3MViewer = function() {
 	}
 	
 	this.parse = function(j3m) {
-		
+		j3m_viewer.j3m = j3m;
 		j3m_viewer.parseRawData(j3m);
 		
 		if(j3m.data.exif.location) {
@@ -650,63 +650,16 @@ var J3MViewer = function() {
 
 		}
 		
-		var ctx = $('#media_image').get(0).getContext('2d');
-		//ctx.drawImage(window.location.pathname + 'media/high/',0,0);
+		j3m_viewer.data = {
+			exif : j3m.data.exif
+		}
 		
-		var origHeight = j3m.data.exif["height"];
+		if(j3m.data.userAppendedData != undefined) {
+			j3m_viewer.data.userAppendedData = j3m.data.userAppendedData;
+		}
 		
-		var origWidth = j3m.data.exif["width"];
-		console.log("image size: " + origWidth + 'x' + origHeight);
-		var canvasWidth = $('#media_image').width();
-		var canvasHeight = $('#media_image').height();
-		console.log("canvas size: " + canvasWidth + 'x' + canvasHeight);
-
-		var heightMult = origHeight / canvasHeight;
-		var widthMult = (origWidth/origHeight)*heightMult;
-		
-		console.log("multiplier size: " + widthMult + ' and ' + heightMult);
-
-		ctx.beginPath();
-		
-		var imageObj = new Image();
-
-	      imageObj.onload = function() {
-	        ctx.drawImage(imageObj, 0,0,origWidth / widthMult,origHeight/heightMult);
-	        
-	        if (j3m.data.userAppendedData!=undefined)
-        	{
-	        	console.log("found user data");
-	        	
-	        	for (idx = 0; idx < j3m.data.userAppendedData.length; idx++)
-	        	{
-		        	var formValues = j3m.data.userAppendedData[idx]["associatedForms"][0];
-		        	var formRegion = j3m.data.userAppendedData[idx]["regionBounds"];
-		        	
-		        	ctx.beginPath();
-		        	console.log("form region: " + formRegion.left / widthMult + 'x' + formRegion.top / heightMult + " size=" + formRegion.width / widthMult + 'x' + formRegion.height / heightMult);
-		        	ctx.rect(parseInt(formRegion.left / widthMult), parseInt(formRegion.top / heightMult), parseInt(formRegion.width / widthMult), parseInt(formRegion.height / heightMult));
-		        	
-		        	if (formValues.answerData!=undefined)
-		        	{
-			        	var formText = formValues.answerData.iW_free_text;
-			        	
-					      // set line color
-						ctx.strokeStyle = '#0000ff';
-						ctx.stroke();
-						
-						ctx.fillStyle = '#ffffff';
-						ctx.font = '30pt Calibri';
-						ctx.fillText(formText, parseInt(formRegion.left / widthMult), parseInt(formRegion.top / heightMult));
-		        	}
-	        	}
-        	}
-	        
-	        
-	      };
-	      imageObj.src = 'media/high/';
-		
-		
-		
+		parseMedia();
+				
 		/**
 		 * userAppendedData": [{"associatedForms": [{"path": "/forms/493dde68c49e6b99556186a3e776d705.xml", 
 		 * "namespace": "iWitness Free Text Annotations", "id": "109dadec7e02bc7927e1271931d45c95", 

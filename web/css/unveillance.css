@@ -59,6 +59,10 @@ body {
 	padding:0px;
 }
 
+#content .ic_collection_holder {
+
+}
+
 #media {
 	background:#555555;
 	text-align:center;
@@ -115,6 +119,10 @@ body {
 	padding:0 10px;
 	margin:10px;
 	display:none;
+}
+
+#aux_popup form {
+	margin-bottom: 0px;
 }
 
 #admin_advanced_search_holder {
@@ -239,6 +247,14 @@ a {
 	border:1px solid #a0c2d3;
 }
 
+#content #ic_submission_info #ic_submission_opts_holder {
+	text-align:left;
+}
+
+#content #ic_submission_info #ic_submission_opts_holder a {
+	font-size:0.85em;
+}
+
 input, select {
 	font-size:0.8em;
 	font-family:arial;
@@ -309,6 +325,10 @@ input, select {
 	background-color:#ffbe99;
 }
 
+#content #ic_j3m_holder #media .ic_formdata_holder {
+	font-size:0.8em;
+}
+
 .ic_label {
 	font-weight:bold;
 }
@@ -338,6 +358,25 @@ input, select {
 	float:left;
 	padding: 4px;
 	margin:0 6px;
+}
+
+#content ul li.ic_collection_holder div.ic_collection_preview ul {
+	min-height:100px;
+}
+
+#content ul li.ic_collection_holder div.ic_collection_preview ul li {
+	float:left;
+	margin:0;
+	padding:0;
+}
+
+span.inline_list_horizontal {
+	display:inline;
+}
+
+span.inline_list_horizontal ul li {
+	float:left;
+	font-size:0.8em;
 }
 
 ul.ic_panel_ul {
@@ -418,8 +457,25 @@ width:100%;
 margin:0px;
 margin-top:0px;
 margin-bottom:12px;
-text-align:center;
 }
+
+#ic_submission_info #ic_download_options_holder {
+	position:absolute;
+	margin:3px 0 0 0;
+	padding:0;
+}
+
+#ic_submission_info #ic_download_options_holder li {
+	position:relative;
+}
+
+#ic_submission_info #ic_download_options_holder li a {
+	display: block;
+    margin: 1px 0;
+    padding: 2px;
+    width:102%;
+}
+
 
 .ic_item_box
 {
@@ -434,6 +490,14 @@ text-align:center;
 {
 	height:400px;
 	width:50%;
+}
+
+#content #ic_j3m_holder #media .ic_formdata_holder {
+	position:absolute;
+	padding:0 10px;
+	margin:0;
+	background-color:#ffffff;
+	border:1px solid #cccccc;
 }
 
 #logo_icon
@@ -502,4 +566,30 @@ vertical-align:top;
 
 .dz-details .dz-filename img, .dz-details .dz-filename div {
 	float:left;
+}
+
+#j3m_data_d3_root {
+	width:98%;
+	overflow-y: auto;
+	overflow-x: hidden;
+	height:500px;
+}
+
+.node rect {
+  cursor: pointer;
+  fill: #fff;
+  fill-opacity: .5;
+  stroke: #3182bd;
+  stroke-width: 1.5px;
+}
+
+.node text {
+  font: 10px sans-serif;
+  pointer-events: none;
+}
+
+path.link {
+  fill: none;
+  stroke: #9ecae1;
+  stroke-width: 1.5px;
 }
