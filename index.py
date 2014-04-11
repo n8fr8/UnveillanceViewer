@@ -304,9 +304,17 @@ class LoginHandler(BaseHandler):
 		if getStatus(self) == 0:
 			self.finish({'ok':False})
 			return
+
+		username = ''
+		password = ''
 		
-		username = self.get_argument('username', default='').encode('utf-8')
-		password = self.get_argument('password', default='').encode('utf-8')
+		credentials = self.request.body
+		for kvp in credentials.split("&"):
+			kv = kvp.split("=")
+			if kv[0] == "username":
+				username = kv[1]
+			elif kv[0] == "password":
+				password = kv[1]
 
 		if not username or not password:
 			self.finish({'ok':False})
@@ -429,8 +437,16 @@ class UserHandler(tornado.web.RequestHandler):
 				self.finish({'ok':False})
 				return
 		
-		username = self.get_argument('username', default='').encode('utf-8')
-		password = self.get_argument('password', default='').encode('utf-8')
+		username = ''
+		password = ''
+		
+		credentials = self.request.body
+		for kvp in credentials.split("&"):
+			kv = kvp.split("=")
+			if kv[0] == "username":
+				username = kv[1]
+			elif kv[0] == "password":
+				password = kv[1]
 
 		if len(username) < 4 or len(password) < 6:
 			self.finish({'ok':False})
