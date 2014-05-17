@@ -1,5 +1,4 @@
 var J3MViewer = function() {
-	var cloudmadeApiKey = '23c00ae936704081ab019253c36a55b3';
 	
 	this.map;
 	this.sensorData = new Array();
@@ -94,11 +93,12 @@ var J3MViewer = function() {
 	this.loadMap = function(lon,lat,mapId,mapZoom) {
 		
 		map = L.map(mapId).setView([lat,lon], mapZoom);
-		L.tileLayer('http://{s}.tile.cloudmade.com/' + cloudmadeApiKey + '/110483/256/{z}/{x}/{y}.png', {
-			maxZoom: 18,
-			attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>'
-		}).addTo(map);
-		
+
+// add an OpenStreetMap tile layer
+L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+}).addTo(map);
+
 		var myIcon = L.icon({
 		    iconUrl: '/web/images/ic_marker.png',
 		    iconRetinaUrl: '/web/images/ic_marker.png',
