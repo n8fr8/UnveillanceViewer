@@ -251,7 +251,7 @@ function getCookie(name) {
 		
 		$("#ic_lookup_hash").keypress(function(evt) {
 			if(evt.which == 13) {
-				window.location = "/submissions/?hashes=" + $("#ic_lookup_hash").val() + "&public_hash=" + $("#ic_lookup_hash").val();
+				window.location = "/submissions/?hashes=" + $("#ic_lookup_hash").val();
 			}
 		});
 		
